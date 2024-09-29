@@ -39,6 +39,7 @@ mkdir -p /ace/log/hello
 mkdir -p /ace/servers
 
 FILES=~/ace/config/*.yaml
+
 for p in $FILES
 do
 

@@ -1,0 +1,16 @@
+CREATE COMPUTE MODULE Response
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/hello/output';
+	  	SET OutputLocalEnvironment.Destination.File.Name      = Environment.Service.FileName;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

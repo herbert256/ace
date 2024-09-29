@@ -1,11 +1,12 @@
 #/bin/sh
 
-~/ace/scripts/stop.sh
+~/ace/scripts/stop.sh > /tmp/aceSto.log 2>&1
 
 ~/ace/ram.sh /ace
 ~/ace/ram.sh /var/mqsi
 ~/ace/ram.sh /mq
 ~/ace/ram.sh /workspaces
+~/ace/ram.sh /kafka
 
 mkdir /ace/log
 

@@ -1,0 +1,16 @@
+CREATE COMPUTE MODULE Test_Shared_Goed
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot = InputRoot;
+
+		SET OutputLocalEnvironment.Destination.File.Directory	= '/ace/data/test/';
+		SET OutputLocalEnvironment.Destination.File.Name		= 'output.txt';
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

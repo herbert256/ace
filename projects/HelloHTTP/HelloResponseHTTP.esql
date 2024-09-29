@@ -1,0 +1,15 @@
+CREATE COMPUTE MODULE HelloResponseHTTP
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputLocalEnvironment.Destination.HTTP.RequestIdentifier = InputRoot.MQMD.CorrelId;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

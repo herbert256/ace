@@ -1,5 +1,4 @@
 BROKER SCHEMA Admin
-
 CREATE COMPUTE MODULE Error
 
 	DECLARE Error EXTERNAL CHAR 'AdminError';
@@ -8,8 +7,8 @@ CREATE COMPUTE MODULE Error
 
 	BEGIN
 
-		SET Environment.Shared.Directory = Shared.ErrorDir() || Error || '/' || MessageFlowLabel; 
-		SET Environment.Shared.File      = Shared.FileName() || '.xml';
+		SET Environment.Generic.Directory = Generic.ErrorDir() || Error || '/' || MessageFlowLabel; 
+		SET Environment.Generic.File      = Generic.FileName() || '.xml';
 		
         SET OutputRoot.Properties.CodedCharSetId = 1208;
         SET OutputRoot.Properties.Encoding 		 = 546;

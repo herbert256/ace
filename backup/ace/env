@@ -1,6 +1,0 @@
-export ODBCINI=/var/mqsi/odbc/odbc.ini
-export ODBCSYSINI=/var/mqsi/odbc
-
-. /var/db2/sqllib/db2profile
-. /opt/mqm/bin/setmqenv -n Installation1
-. /opt/mqsi/server/bin/mqsiprofile

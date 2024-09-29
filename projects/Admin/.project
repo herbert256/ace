@@ -4,7 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>AdminLib</project>
-		<project>Shared</project>
+		<project>Generic</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

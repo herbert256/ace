@@ -1,8 +1,0 @@
-serverConfVersion: 1
-
-RestAdminListener:
-  port: 7606
-
-ResourceManagers:
-  JVM:
-    jvmDebugPort: 7906

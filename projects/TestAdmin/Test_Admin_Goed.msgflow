@@ -6,7 +6,7 @@
     <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/TestAdmin/icons/full/obj16/Test_Admin_Goed.gif"/>
     <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/TestAdmin/icons/full/obj30/Test_Admin_Goed.gif"/>
     <composition>
-      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="142,32" queueName="TST_GOED_OUT">
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="171,32" queueName="TST_GOED_OUT">
         <translation xmi:type="utility:ConstantString" string="TST_GOED_OUT"/>
       </nodes>
       <nodes xmi:type="Admin_MQ_IN.subflow:FCMComposite_1" xmi:id="FCMComposite_1_5" location="24,31" queueName="TST_GOED_IN">

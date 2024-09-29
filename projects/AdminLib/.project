@@ -3,7 +3,7 @@
 	<name>AdminLib</name>
 	<comment></comment>
 	<projects>
-		<project>Shared</project>
+		<project>Generic</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

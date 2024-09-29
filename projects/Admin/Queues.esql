@@ -6,8 +6,8 @@ CREATE COMPUTE MODULE Queues
 	
 	BEGIN 
  
-		DECLARE Dir  CHAR Shared.RootDir() || 'queues/' || InputRoot.MQMD.SourceQueue;
-		DECLARE File CHAR Shared.FileName();
+		DECLARE Dir  CHAR Generic.RootDir() || 'queues/' || InputRoot.MQMD.SourceQueue;
+		DECLARE File CHAR Generic.FileName();
 		
 		CALL Body    (Dir, File);		
 		CALL Headers (Dir, File);		
@@ -25,8 +25,8 @@ CREATE COMPUTE MODULE Queues
 			
 		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
 	
-		SET Environment.Shared.Directory = Dir;
-		SET Environment.Shared.File	  = 
+		SET Environment.Generic.Directory = Dir;
+		SET Environment.Generic.File	  = 
 			   File  
 			|| '_' 
 			|| CAST(InputRoot.MQMD.CodedCharSetId AS CHAR) 
@@ -53,8 +53,8 @@ CREATE COMPUTE MODULE Queues
 			SET I = I + 1;
 		END WHILE;
 
-		SET Environment.Shared.Directory = Dir;
-		SET Environment.Shared.File	  = File || '_headers.xml';
+		SET Environment.Generic.Directory = Dir;
+		SET Environment.Generic.File	  = File || '_headers.xml';
 		
 		PROPAGATE;
 
