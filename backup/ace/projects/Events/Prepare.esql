@@ -1,0 +1,31 @@
+CREATE COMPUTE MODULE Prepare
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		DECLARE now    CHAR CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd_HHmmss_SSSSSS');
+		DECLARE seq    CHAR CAST(FLOOR(RAND() * 999999) as CHAR FORMAT '000000') ;
+		DECLARE ext    CHAR '.txt';
+		
+		DECLARE xleft  CHAR CAST(LEFT(InputRoot.BLOB.BLOB,  1) AS CHAR CCSID 1208);
+		DECLARE xright CHAR CAST(RIGHT(InputRoot.BLOB.BLOB, 1) AS CHAR CCSID 1208);
+		
+		IF xleft = '<' and xright = '>' THEN
+			SET ext = '.xml';
+		END IF;
+	
+		IF xleft = '{' and xright = '}' THEN
+			SET ext = '.json';
+		END IF;				  
+		
+		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/events/' ||  Environment.Dir;
+	  	SET OutputLocalEnvironment.Destination.File.Name      = now || '_' || seq || '.' || ext;
+
+		SET OutputRoot = InputRoot;
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

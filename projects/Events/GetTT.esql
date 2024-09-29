@@ -1,0 +1,32 @@
+CREATE COMPUTE MODULE GetTT
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+
+		CREATE LASTCHILD OF OutputRoot DOMAIN('MQMD');
+		CREATE LASTCHILD OF OutputRoot DOMAIN('MQRFH2');
+		CREATE LASTCHILD OF OutputRoot DOMAIN('BLOB');
+		
+		SET OutputRoot.MQMD.CodedCharSetId = 1208;
+		SET OutputRoot.MQMD.Encoding       = 546;
+		SET OutputRoot.MQMD.Format         = MQFMT_RF_HEADER_2;
+		
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Version        = 2;
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)CodedCharSetId = 1208;
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Encoding       = 546;
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Format         = MQFMT_STRING;
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)NameValueCCSID = 1208;
+		
+		SET OutputRoot.MQRFH2.psc.Topic = InputLocalEnvironment.MQTT.Input.Topic;
+
+		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

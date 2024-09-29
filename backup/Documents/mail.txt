@@ -1,0 +1,44 @@
+bron: https://www.howtoforge.com/tutorial/configure-postfix-to-use-gmail-as-a-mail-relay/
+
+
+apt-get install postfix mailutils
+(3 vragen, defaults lijken goed)
+
+    ok
+
+    Internet Server @ "General type of mail configuration"
+
+    linux @ "Mail name" 
+
+Maak bestand /etc/postfix/sasl_passwd met onderstaande inhoud
+
+    [smtp.gmail.com]:587    herbert@groot.jebbink.nl:XXX        ( XXX is wachtwoord )
+
+chmod 600 /etc/postfix/sasl_passwd
+
+Bewerk /etc/postfix/main.cf
+
+wijzig
+
+    relayhost = [smtp.gmail.com]:587
+
+voeg toe
+
+    smtp_sasl_auth_enable = yes
+    smtp_sasl_security_options =
+    smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+    smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+    smtp_enforce_tls = yes
+
+
+postmap /etc/postfix/sasl_passwd
+
+service postfix stop
+service postfix start
+
+
+Zet "Allow less secure apps" aan in je Google Account
+
+    https://myaccount.google.com/lesssecureapps?utm_source=google-account&utm_medium=web
+
+mail -s "Testen postfix to @ gmail" herbert@groot.jebbink.nl < /home/hgj/Documents/mail.txt

@@ -1,0 +1,48 @@
+CREATE COMPUTE MODULE Events
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+
+        SET OutputRoot = InputRoot;     
+		PROPAGATE TO TERMINAL 'out1';
+							
+		SET Environment.Topic = Topic(InputRoot.MQRFH2.psc.Topic);
+		
+		DECLARE Level1 CHAR SUBSTRING(Environment.Topic BEFORE '/');   
+		DECLARE Rest1  CHAR SUBSTRING(Environment.Topic AFTER '/');   
+		DECLARE Level2 CHAR SUBSTRING(Rest1 BEFORE '/');   
+        
+        IF Level1 = 'StatisticsAccounting' THEN
+	        SET OutputRoot = InputRoot;     
+        	PROPAGATE TO TERMINAL 'out2';
+        ELSE
+	        SET OutputRoot = InputRoot;     
+        	PROPAGATE TO TERMINAL 'out3';
+        END IF;
+         
+		RETURN FALSE;
+
+	END;
+
+	CREATE FUNCTION Topic (IN Topic CHAR) RETURNS CHAR BEGIN
+		 
+		IF COALESCE(Topic, '' ) = '' THEN
+			RETURN ' NoTopicFound';
+		END IF;
+		
+		DECLARE work CHAR TRIM(Topic);
+			
+		SET work = REPLACE(work, 'IBM/IntegrationBus/',              '/');
+		SET work = REPLACE(work, '$SYS/Broker/integration_server/',  '/');
+		SET work = REPLACE(work, '//', '/');
+		
+		IF SUBSTRING(work FROM 1 FOR 1) = '/' THEN
+			SET work = SUBSTRING(work FROM 2); 
+		END IF;
+
+		RETURN work;
+		
+	END;
+
+END MODULE;

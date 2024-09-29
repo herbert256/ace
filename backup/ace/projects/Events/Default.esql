@@ -1,0 +1,14 @@
+CREATE COMPUTE MODULE DefaultX
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+				
+		SET Environment.Dir = 'default/' || Environment.Topic;	  	
+
+        SET OutputRoot = InputRoot;
+ 
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

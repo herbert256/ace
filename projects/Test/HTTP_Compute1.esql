@@ -1,0 +1,14 @@
+
+CREATE COMPUTE MODULE HTTP_Compute1
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.XMLNSC.Error.oops = 'Catch';
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

@@ -1,0 +1,40 @@
+BROKER SCHEMA Private
+
+
+CREATE COMPUTE MODULE OneWayCheck
+
+	DECLARE TransportType  EXTERNAL CHAR 'transport';
+	DECLARE MessageType    EXTERNAL CHAR 'message';
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		IF Environment.Generic.TransportType IN ('http', 'soap') THEN
+			CALL OneWayReply ();
+		END IF;
+
+		IF Environment.Generic.TransportType = 'mq' and InputRoot.MQMD.MsgType = MQMT_REQUEST  THEN
+			CALL OneWayReply ();
+		END IF;
+		
+		RETURN FALSE;
+
+	END;
+
+	CREATE PROCEDURE OneWayReply ()
+
+	BEGIN
+
+		SET Environment.Generic.Status = 'OneWay';
+		
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+
+		SET OutputRoot.XMLNSC.Info.Text = 'Message received. Refference ID is: ' || Environment.Generic.MsgId;
+
+		PROPAGATE TO LABEL 'Reply-' || Environment.Generic.TransportType;
+
+	END;
+	
+END MODULE;

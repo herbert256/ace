@@ -1,0 +1,24 @@
+BROKER SCHEMA Private
+
+
+CREATE COMPUTE MODULE Error
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.API.MsgId = COALESCE(Environment.API.MsgId, UUIDASCHAR);
+		
+		SET OutputRoot.XMLNSC.Error.Text = 'An error occured, Error ID is: ' || Environment.API.MsgId;
+
+		IF Environment.API.MessageType = 'request' THEN
+			PROPAGATE TO LABEL 'Reply-' || Environment.API.TransportType;
+		ELSE
+			PROPAGATE TO LABEL 'Abort';
+		END IF;
+		
+		RETURN FALSE;
+
+	END;
+
+END MODULE;

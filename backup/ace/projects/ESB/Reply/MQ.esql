@@ -1,0 +1,20 @@
+BROKER SCHEMA Reply
+
+CREATE COMPUTE MODULE MQ
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.MQMD = Environment.ESB.Transport;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

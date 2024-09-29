@@ -1,0 +1,71 @@
+CREATE COMPUTE MODULE Stats
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		DECLARE input REFERENCE TO InputRoot.XMLNSC.WMQIStatisticsAccounting;
+		DECLARE flow  REFERENCE TO input.MessageFlow;
+
+		IF flow.TotalInputMessages = '0' THEN
+			RETURN FALSE;
+		END IF;
+
+		DECLARE output, output2 REFERENCE TO OutputRoot;
+				
+		CREATE LASTCHILD OF output AS output DOMAIN('XMLNSC') NAME('XMLNSC');
+		CREATE LASTCHILD OF output AS output NAME('stats'); 
+
+		SET output.counts.(XMLNSC.Attribute)messages    = flow.TotalInputMessages;
+		SET output.counts.(XMLNSC.Attribute)errors      = flow.TotalNumberOfMessagesWithErrors;
+		SET output.counts.(XMLNSC.Attribute)commits     = flow.TotalNumberOfCommits;
+		SET output.counts.(XMLNSC.Attribute)backouts    = flow.TotalNumberOfBackouts;
+		
+		SET output.wait.(XMLNSC.Attribute)elapsed   	= flow.ElapsedTimeWaitingForInputMessage;
+		SET output.wait.(XMLNSC.Attribute)cpu       	= flow.CPUTimeWaitingForInputMessage;
+
+		SET output.elapsed.(XMLNSC.Attribute)total   	= flow.TotalElapsedTime;
+		SET output.elapsed.(XMLNSC.Attribute)min       	= flow.MinimumElapsedTime;
+		SET output.elapsed.(XMLNSC.Attribute)max       	= flow.MaximumElapsedTime;
+		
+		SET output.cpu.(XMLNSC.Attribute)total          = flow.TotalCPUTime;
+		SET output.cpu.(XMLNSC.Attribute)min        	= flow.MaximumCPUTime;
+		SET output.cpu.(XMLNSC.Attribute)max        	= flow.MinimumCPUTime;
+		
+		SET output.size.(XMLNSC.Attribute)total     	= flow.TotalSizeOfInputMessages;
+		SET output.size.(XMLNSC.Attribute)min       	= flow.MinimumSizeOfInputMessages;
+		SET output.size.(XMLNSC.Attribute)max       	= flow.MaximumSizeOfInputMessages;
+		
+		CREATE LASTCHILD OF output AS output NAME('nodes');
+		
+		FOR node AS input.Nodes.NodeStatistics[] DO
+			IF node.CountOfInvocations <> '0' THEN
+				
+				CREATE LASTCHILD OF output AS output2 NAME('node');
+
+				SET output2.(XMLNSC.Attribute)name	= REPLACE(REPLACE(node.Label, '#OutTerminal', ''), '#InTerminal', '');		
+				SET output2.(XMLNSC.Attribute)count	= node.CountOfInvocations;
+
+				SET output2.elapsed.(XMLNSC.Attribute)total	= node.TotalElapsedTime;
+				SET output2.elapsed.(XMLNSC.Attribute)min	= node.MinimumElapsedTime;
+				SET output2.elapsed.(XMLNSC.Attribute)max	= node.MaximumElapsedTime;
+		
+				SET output2.cpu.(XMLNSC.Attribute)total		= node.TotalCPUTime;
+				SET output2.cpu.(XMLNSC.Attribute)min		= node.MaximumCPUTime;
+				SET output2.cpu.(XMLNSC.Attribute)max		= node.MinimumCPUTime;
+
+			END IF;
+
+		END FOR;
+								
+		SET Environment.Dir =  'stats/'
+							|| '/' || COALESCE(flow.ApplicationName, 'xxx')
+							|| '/' || COALESCE(flow.MessageFlowName, 'xxx')
+							|| '/' || COALESCE(input.RecordType,     'xxx')
+							|| '/' || COALESCE(input.RecordCode,     'xxx');
+	  		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

@@ -1,0 +1,74 @@
+
+
+
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org jsonlint
+
+sudo service mongod start
+
+cat /var/log/mongodb/mongod.log
+
+cd /tmp
+mkdir mongo
+cd mongo
+wget "https://raw.githubusercontent.com/mongodb/docs-assets/primer-dataset/primer-dataset.json"
+
+mongoimport --db test --collection restaurants --drop --file primer-dataset.json
+
+mongo
+use test
+db.createUser(
+   {
+     user: "hgj",
+     pwd: "ww",
+     roles: [ "readWrite", "dbAdmin"]
+   }
+)
+
+
+db.restaurants.find( { "address.zipcode": "10075" } )
+
+db.createUser( { user: "hgj",
+                 pwd: "ww",
+                 roles: [ { role: "clusterAdmin", db: "admin" },
+                          { role: "readAnyDatabase", db: "admin" },
+                          "readWrite"] },
+               { w: "majority" , wtimeout: 5000 } )
+
+
+
+http://www.ibm.com/support/knowledgecenter/en/SSMKHH_10.0.0/com.ibm.etools.mft.doc/bz90805_.htm
+
+. ~/scripts/settings.sh
+cd $MQSI_WORKPATH/node_modules
+npm install loopback-connector-mongodb
+
+file /var/mqsi/connectors/loopback/datasources.json gemaakt met onderstaande inhoud:
+
+    {
+      "mongodb": { 
+        "name": "mongodb",
+        "connector": "mongodb",
+        "host": "127.0.0.1", 
+        "port": 27017,
+        "database": "test", 
+        "username": "hgj", 
+        "password": "ww"
+      }
+
+    }
+
+jsonlint-php datasources.json
+
+mqsisetdbparms NODE -n loopback::mongodb -u hgj -p ww 
+
+
+
+
+
+
+
+

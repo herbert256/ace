@@ -1,0 +1,15 @@
+BROKER SCHEMA Private
+
+CREATE COMPUTE MODULE ArchiveData
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN		
+
+		SET Environment.FileData = InputRoot.BLOB.BLOB;
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:com_ibm_connector_mqtt_ComIbmEventInput.msgnode="com/ibm/connector/mqtt/ComIbmEventInput.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="TT_TO_PUBSUB.subflow" nsPrefix="TT_TO_PUBSUB.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.port" name="port" lowerBound="1" defaultValueLiteral="1884">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.queueName" name="queueName" defaultValueLiteral="TT_ADMIN">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="TT_TO_PUBSUB" bundleName="TT_TO_PUBSUB" pluginId="Events"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Events/icons/full/obj16/TT_TO_PUBSUB.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Events/icons/full/obj30/TT_TO_PUBSUB.gif"/>
+    <composition>
+      <nodes xmi:type="com_ibm_connector_mqtt_ComIbmEventInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="37,36" clientId="ACE" topicName="#" hostName="localhost" port="1884" qos="2" connectorName="MQTT" securityIdentity="" useSSL="false" messageDomainProperty="BLOB" messageSetProperty="" messageTypeProperty="" messageFormatProperty="" validateTiming="deferred" parserXmlnscBuildTreeUsingXMLSchema="no" parserXmlnscUseForXmlnsDomain="no" parserXmlnscMixedContentRetainMode="none" parserXmlnscCommentsRetainMode="none"
+          parserXmlnscProcessingInstructionsRetainMode="none" validateMaster="none" validateFailureAction="exception" validateAllValueConstraints="true" validateFixup="none" policyUrl="">
+        <translation xmi:type="utility:ConstantString" string="MQTT"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="209,37" queueName="TT_ADMIN" destinationQueueManagerName="ADMIN" transactionMode="no" persistenceMode="no" validateMaster="none">
+        <translation xmi:type="utility:ConstantString" string="Queue"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="117,36" computeExpression="esql://routine/#GetTT.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="GetTT"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="313,41">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="TT_TO_PUBSUB" pluginId="Events"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.PositiveInteger0To65535PropertyEditor" configurable="true" describedAttribute="Property.port">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.port" bundleName="com/ibm/connector/mqtt/ComIbmEventInput" pluginId="MQTTNodes"/>
+        <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.queueName">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.queueName" bundleName="ComIbmMQOutput" pluginId="com.ibm.etools.mft.ibmnodes.definitions"/>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.port" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="com/ibm/connector/mqtt/ComIbmEventInput.msgnode#Property.port"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.queueName" overriddenNodes="FCMComposite_1_3">
+      <overriddenAttribute href="ComIbmMQOutput.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

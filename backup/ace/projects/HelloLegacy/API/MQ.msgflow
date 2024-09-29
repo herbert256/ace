@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Input_MQ.subflow="Input/MQ.subflow" xmlns:Reply_Out_MQ.subflow="Reply/Out/MQ.subflow" xmlns:Service_Service.subflow="Service/Service.subflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="API/MQ.msgflow" nsPrefix="API_MQ.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="MQ" bundleName="API/MQ" pluginId="HelloLegacy"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/HelloLegacy/icons/full/obj16/MQ.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/HelloLegacy/icons/full/obj30/MQ.gif"/>
+    <composition>
+      <nodes xmi:type="Reply_Out_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_4" location="252,51">
+        <translation xmi:type="utility:ConstantString" string="MQ/Reply-out"/>
+      </nodes>
+      <nodes xmi:type="Service_Service.subflow:FCMComposite_1" xmi:id="FCMComposite_1_2" location="147,51">
+        <translation xmi:type="utility:ConstantString" string="Service"/>
+      </nodes>
+      <nodes xmi:type="Input_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_1" location="52,51" queueName="HELLO">
+        <translation xmi:type="utility:ConstantString" string="MQ"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

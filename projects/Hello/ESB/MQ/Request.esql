@@ -1,0 +1,50 @@
+BROKER SCHEMA ESB.MQ
+
+
+
+CREATE COMPUTE MODULE Request
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId	= 1208;
+		SET OutputRoot.Properties.Encoding			= 546;	
+
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'MQMD' NAME 'MQMD';
+		
+		SET OutputRoot.MQMD.Format 	 = MQFMT_STRING;
+		SET OutputRoot.MQMD.MsgType  = MQMT_REQUEST;
+		SET OutputRoot.MQMD.MsgId    = Environment.Shared.Service.MsgId;
+		SET OutputRoot.MQMD.ReplyToQ = Environment.Shared.Service.ReplyToQ;	
+		
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'XMLNSC' NAME 'XMLNSC';
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Correlation
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET OutputRoot.Properties = InputRoot.Properties;
+		
+		SET OutputRoot.MQMD       = InputRoot.MQMD;
+		SET OutputRoot.MQMD.MsgId = InputLocalEnvironment.WrittenDestination.MQ.DestinationData.msgId;
+		
+		SET OutputRoot.XMLNSC.Correlation.Service = Environment.Shared.Service;
+		SET OutputRoot.XMLNSC.Correlation.Archive = Environment.Shared.Archive;
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;

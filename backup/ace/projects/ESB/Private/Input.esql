@@ -1,0 +1,209 @@
+BROKER SCHEMA Private
+
+
+CREATE COMPUTE MODULE ESB
+
+	DECLARE TransportType  EXTERNAL CHAR 'transport';
+	DECLARE MessageType    EXTERNAL CHAR 'message';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		CREATE LASTCHILD OF Environment DOMAIN 'XMLNSC' NAME 'ESB';
+		
+		IF EXISTS (Environment.Get[]) THEN
+			SET Environment.ESB = Environment.Get;
+			SET Environment.Get = NULL;
+			SET OutputRoot = InputRoot;
+			RETURN TRUE;
+		END IF;		 
+		
+		SET Environment.ESB.MsgId         = UUIDASCHAR;
+		SET Environment.ESB.Status        = 'Start';
+		SET Environment.ESB.TransportType = TransportType;
+		SET Environment.ESB.MessageType   = MessageType;
+		
+		SET Environment.ESB.Local = InputLocalEnvironment; 
+		
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER CARDINALITY(InputRoot.*[]);
+		
+		WHILE I < J DO
+			SET Environment.ESB.Headers.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+
+		PROPAGATE TO LABEL 'OneWayCheck';
+		PROPAGATE TO LABEL 'SetTimeOut';
+		
+		SET OutputRoot = InputRoot;
+				
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Sanitize
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE File
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Callable
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE HTTP
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Soap
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC.Body;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Kafka
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE MQ
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE MQTT
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Timer
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding       = 546;
+		
+		SET OutputRoot.XMLNSC = InputLocalEnvironment.TimeoutRequest;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

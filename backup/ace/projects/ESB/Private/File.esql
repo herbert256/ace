@@ -1,0 +1,140 @@
+BROKER SCHEMA Private
+
+
+CREATE COMPUTE MODULE File_Main
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET Environment.ESB.Directory = TRIM(COALESCE(Environment.ESB.Directory, ''));
+		SET Environment.ESB.File      = TRIM(COALESCE(Environment.ESB.File,      ''));
+				
+		IF Environment.ESB.Directory = '' THEN
+			SET Environment.ESB.Directory = ESB.ErrorDir() || 'NoDirectoryGiven/' || MessageFlowLabel || '/' ;			
+		END IF;
+ 		
+		IF Environment.ESB.File = '' THEN
+			SET Environment.ESB.File = ESB.FileName() || ESB.MsgID(NULL) || '.txt';
+		END IF;
+
+		SET OutputRoot.Properties.CodedCharSetId = InputRoot.Properties.CodedCharSetId;
+		SET OutputRoot.Properties.Encoding 		 = InputRoot.Properties.Encoding;
+			
+		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
+				
+		SET OutputLocalEnvironment.Destination.File.Directory	= Environment.ESB.Directory;
+		SET OutputLocalEnvironment.Destination.File.Name 		= Environment.ESB.File;
+		PROPAGATE TO TERMINAL 'out1';
+		
+		SET OutputLocalEnvironment.Destination.File.Directory	= Environment.ESB.Directory;
+		SET OutputLocalEnvironment.Destination.File.Name 		= Environment.ESB.File;
+		PROPAGATE TO TERMINAL 'out2';
+		
+		RETURN FALSE;
+
+	END;
+
+END MODULE;
+
+CREATE COMPUTE MODULE CopyX
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			CALL File_BitStream ();
+			RETURN FALSE;
+		END;
+				
+		SET OutputRoot = InputRoot;
+
+		PROPAGATE TO TERMINAL 'out';
+		
+		RETURN FALSE;
+
+	END;
+
+	CREATE PROCEDURE File_BitStream () BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			CALL File_Oops ();
+			RETURN;
+		END;
+
+       	SET OutputRoot.Properties.CodedCharSetId = InputRoot.Properties.CodedCharSetId;
+        SET OutputRoot.Properties.Encoding 		 = InputRoot.Properties.Encoding;
+
+		DECLARE options INTEGER BITOR(RootBitStream, ValidateNone);
+
+      	SET OutputRoot.BLOB.BLOB = ASBITSTREAM(InputRoot.*[<] OPTIONS options );
+
+		PROPAGATE TO TERMINAL 'out';
+		
+	END;
+
+	CREATE PROCEDURE File_Oops () BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			RETURN;
+		END;
+
+      	SET OutputRoot.Properties.CodedCharSetId = 1208;
+        SET OutputRoot.Properties.Encoding 		 = 546;
+
+      	SET OutputRoot.BLOB.BLOB = CAST('FileOops: Failed to create a message.' AS BLOB CCSID 1208);
+
+		PROPAGATE TO TERMINAL 'out';
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Read_Before
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputLocalEnvironment.Destination.File.Directory	= Environment.ESB.Directory;
+		SET OutputLocalEnvironment.Destination.File.Name 		= Environment.ESB.File;
+
+		SET Environment.ReadFile = '';
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Read_After
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+		
+		SET Environment.ReadFile = CAST(InputRoot.BLOB.BLOB AS CHAR CCSID InputRoot.Properties.CodedCharSetId ENCODING InputRoot.Properties.Encoding);
+		
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Read_NoMatch
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+		
+		SET Environment.ReadFile = '';
+		
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;

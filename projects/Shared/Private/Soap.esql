@@ -1,0 +1,94 @@
+BROKER SCHEMA Private
+
+
+CREATE COMPUTE MODULE SOAP_Input
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.Shared.Service.Service   = InputRoot.SOAP.Context.service;
+		SET Environment.Shared.Service.Operation = InputRoot.SOAP.Context.operation;
+		SET Environment.Shared.Service.MsgId     = InputLocalEnvironment.Destination.SOAP.Reply.ReplyIdentifier;
+		
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'XMLNSC' NAME 'XMLNSC';
+		
+		SET OutputRoot.XMLNSC = InputRoot.SOAP.Body;
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE SOAP_Failure
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		DECLARE soap NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+		
+		SET OutputRoot.SOAP.Context.Namespace.(SOAP.NamespaceDecl)xmlns:soap = soap;		
+		
+		SET OutputRoot.SOAP.Body.soap:Fault.faultcode   = 'Failure';
+		SET OutputRoot.SOAP.Body.soap:Fault.faultstring = '501';
+		SET OutputRoot.SOAP.Body.soap:Fault.faultactor  = ExecutionGroupLabel || '/' || ApplicationLabel || '' || MessageFlowLabel;
+
+		SET OutputRoot.SOAP.Body.soap:Fault.detail.Text  = 'Failure';
+		SET OutputRoot.SOAP.Body.soap:Fault.detail.Track = COALESCE(Environment.Shared.Archive.id, UUIDASCHAR);
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE SOAP_TimeOut
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		DECLARE soap NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+		
+		SET OutputRoot.SOAP.Context.Namespace.(SOAP.NamespaceDecl)xmlns:soap = soap;		
+		
+		SET OutputRoot.SOAP.Body.soap:Fault.faultcode   = 'TimeOut';
+		SET OutputRoot.SOAP.Body.soap:Fault.faultstring = '502';
+		SET OutputRoot.SOAP.Body.soap:Fault.faultactor  = ExecutionGroupLabel || '/' || ApplicationLabel || '' || MessageFlowLabel;
+
+		SET OutputRoot.SOAP.Body.soap:Fault.detail.Text  = 'TimeOut';
+		SET OutputRoot.SOAP.Body.soap:Fault.detail.Track = COALESCE(Environment.Shared.Archive.id, UUIDASCHAR);
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE SOAP_Catch
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		DECLARE soap NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+
+		SET OutputRoot.SOAP.Context.Namespace.(SOAP.NamespaceDecl)xmlns:soap = soap;		
+		
+		SET OutputRoot.SOAP.Body.soap:Fault.faultcode   = 'Catch';
+		SET OutputRoot.SOAP.Body.soap:Fault.faultstring = '503';
+		SET OutputRoot.SOAP.Body.soap:Fault.faultactor  = ExecutionGroupLabel || '/' || ApplicationLabel || '' || MessageFlowLabel;
+
+		SET OutputRoot.SOAP.Body.soap:Fault.detail.Text  = 'Catch';
+		SET OutputRoot.SOAP.Body.soap:Fault.detail.Track = COALESCE(Environment.Shared.Archive.id, UUIDASCHAR);
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;

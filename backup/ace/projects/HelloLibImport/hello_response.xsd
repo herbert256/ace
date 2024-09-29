@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:hi="http://www.example.com/hello" 
+	targetNamespace="http://www.example.com/hello"
+	attributeFormDefault="unqualified" elementFormDefault="qualified">
+
+	<xsd:element name="helloResponse" type="hi:helloResponseType"/>
+
+	<xsd:complexType name="helloResponseType">
+		<xsd:sequence>
+			<xsd:element name="greeting" type="xsd:string"/>  
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,23 @@
+BROKER SCHEMA Admin
+
+CREATE COMPUTE MODULE Error
+
+	DECLARE Error EXTERNAL CHAR 'AdminError';
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.Shared.Directory = Shared.ErrorDir() || Error || '/' || MessageFlowLabel; 
+		SET Environment.Shared.File      = Shared.FileName() || '.xml';
+		
+        SET OutputRoot.Properties.CodedCharSetId = 1208;
+        SET OutputRoot.Properties.Encoding 		 = 546;
+
+		SET OutputRoot.XMLNSC.AdminError.ExceptionList  = InputExceptionList;
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

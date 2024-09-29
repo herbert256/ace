@@ -1,0 +1,102 @@
+Linux selectie
+==============
+
+    Veel keuzes mogelijk, CentOS, Debian zijn goede opties, maar ik heb gekozen voor Ubuntu 18.04 LTS.
+
+    Ubuntu LTS is is een platform waar veel software leveranciers rekening mee houden.
+
+    LTS staat voor Long Time Support, niet de allerlaatste versies van Open Source onderdelen,
+    maar wel een langere tijd (5 jaar) security/stabiliteits updates.
+
+    Over het algemeen draait Linux server software, zoals DB2/MQ/IIB van IBM, goed op een Ubuntu LTS release.
+
+    Maar met Ubuntu 18.04 LTS als basis zijn er weer vervolg keuzes mogelijk, hieronder een aantal:
+
+        Ubuntu 18.04  - Unity
+        Xubuntu 18.04 - Xfce
+        Kubuntu 18.04 - KDE (Plasma)
+        Lubuntu 18.04 - LXDE
+        Linux Mint 19 - Cinnamon
+        Linux Mint 19 - Mate
+        Linux Mint 19 - Xfce
+
+    Dit document is gemaakt op een "Linux Mint 19.1 - Cinnamon - 64 bit" installatie,
+    meest gebruikers vriendelijjk, compleet met media support, etc.
+
+
+
+Linux after install
+===================
+
+sudo -i
+
+
+Geen wachtwoord met sudo opgeven in het vervolg
+-----------------------------------------------
+
+echo "hgj ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/hgj
+echo "chrx ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/chrx
+
+
+
+Systeem bijwerken
+-----------------
+
+apt-get update
+apt-get -y upgrade
+apt-get -y dist-upgrade
+apt-get -y -f install
+apt-get -y autoremove
+apt-get -y autoclean
+apt-get -y clean
+
+
+
+Extra packages
+--------------
+
+apt-get install p7zip-full
+apt-get install libaio1
+
+
+Grub tunen
+--------------
+
+xed /etc/default/grub
+
+    Veel PCI errors in de syslog 'pci=nomsi'  toevoegen.
+    'quiet splash' uitzetten, we willen zien wat er gebeurd.
+    GRUB_CMDLINE_LINUX_DEFAULT="pci=nomsi"
+
+    Menu zichtbaar maken, style op 'menu' zetten.
+    GRUB_TIMEOUT_STYLE=menu
+
+update-grub
+
+
+
+Filesysteem tuning
+------------------
+
+onderstaande aan /etc/fstab toegevoegd
+
+tmpfs   /tmp       tmpfs   noatime,size=32G          0  0
+tmpfs   /var/tmp   tmpfs   noatime,size=32G          0  0
+
+noatime toegevoegd aan / in fstab
+
+Journaling uitgezet (moet in recovery mode via grub)
+tune2fs -O ^has_journal /dev/sda3
+
+
+
+Google Chrome
+-------------
+
+Google Chrome geinstalleerd via Website, 64 bits deb package
+
+https://www.google.com/chrome/browser/desktop/index.html
+
+
+
+

@@ -1,0 +1,22 @@
+BROKER SCHEMA Service
+
+
+CREATE COMPUTE MODULE Hello
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		DECLARE hi NAMESPACE 'http://www.example.com/HelloESB';
+		 
+		SET OutputRoot.MQMD = InputRoot.MQMD;
+		
+		SET OutputRoot.XMLNSC.hi:HelloResponse.(XMLNSC.NamespaceDecl)xmlns:hi = hi;	
+				
+		SET OutputRoot.XMLNSC.hi:HelloResponse.hi:greeting = 'Hallo ' || InputRoot.XMLNSC.hi:HelloRequest.hi:name;
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

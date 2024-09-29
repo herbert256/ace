@@ -1,0 +1,42 @@
+BROKER SCHEMA Private
+
+CREATE COMPUTE MODULE Try
+
+	DECLARE Try EXTERNAL CHAR 'Try';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			CALL Try_Oops ();
+			RETURN TRUE;
+		END;
+				
+		SET Environment.Shared.Directory = Shared.ErrorDir() || '/INTERNAL/' || Try || '/' || MessageFlowLabel;
+		SET Environment.Shared.File      = Shared.FileName() || '.xml';
+		
+        SET OutputRoot.Properties.CodedCharSetId = 1208;
+        SET OutputRoot.Properties.Encoding 		 = 546;
+
+		SET OutputRoot.XMLNSC.Check.CurrentExceptionList  = InputExceptionList;
+		SET OutputRoot.XMLNSC.Check.PreviousExceptionList = Environment.Shared.ExceptionList;
+
+		RETURN TRUE;
+		
+	END;
+
+	CREATE PROCEDURE Try_Oops () BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			RETURN;
+		END;
+
+      	SET OutputRoot.Properties.CodedCharSetId = 1208;
+        SET OutputRoot.Properties.Encoding 		 = 546;
+
+      	SET OutputRoot.BLOB.BLOB = CAST('TryOops: Failed to create a message.' AS BLOB CCSID 1208);
+		
+	END;
+
+END MODULE;

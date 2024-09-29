@@ -1,0 +1,363 @@
+sudo apt -y install mosquitto-clients 
+
+libxml2-utils
+
+===========================================================
+DB2 11.5.0.0, MQ 9.1.4.0, ACE 11.0.0.7 Installatie op Linux
+===========================================================
+
+Mijn linux user-id is 'hgj', doe nu een zoek/vervang van 'hgj' door je eigen user-id in dit document.
+
+
+---------------------------------
+Installatie directories na afloop
+---------------------------------
+
+DB2 prog: /opt/db2/
+DB2 data: /var/db2/
+
+MQ prog:  /opt/mqm/
+MQ data:  /var/mqm/
+
+ACE prog: /opt/mqsi/
+ACE data: /var/mqsi/
+
+
+-------------------
+Software verzamelen
+-------------------
+
+ACE: 11.0.0.7-ACE-LINUX64-DEVELOP.tar.gz
+MQ:  mqadv_dev914_ubuntu_x86-64.tar.gz
+DB2: v11.5_linuxx64_dec.tar.gz
+
+ACE: https://developer.ibm.com/integration/docs/app-connect-enterprise/get-started/
+MQ:  https://developer.ibm.com/messaging/mq-downloads/
+DB2: https://www.ibm.com/us-en/marketplace/ibm-db2-direct-and-developer-editions
+
+
+--------------
+Naar root gaan
+--------------
+
+sudo -i
+
+
+------------------------
+Groepen & users aanmaken
+------------------------
+
+groupadd -g 1001 db2
+groupadd -g 1002 mqm
+groupadd -g 1003 mqbrkrs
+
+useradd -u 1001 -g db2 -d /var/db2 db2
+useradd -u 1002 -g mqm -d /var/mqm mqm
+
+mkdir /var/db2  
+mkdir /var/mqm  
+
+mkdir /opt/db2  
+mkdir /opt/mqm  
+
+cp -R /etc/skel/.bashrc ~db2
+cp -R /etc/skel/.bashrc ~mqm
+
+cp -R /etc/skel/.profile ~db2
+cp -R /etc/skel/.profile ~mqm
+
+chown -R db2:db2 /var/db2
+chown -R db2:db2 /var/mqm
+
+chown -R db2:db2 /opt/db2
+chown -R mqm:mqm /opt/mqm
+
+
+Note: ACE heeft geen eigen user ( wel een eigen group: mqbrkrs )
+
+---------------
+DB2 installatie
+---------------
+
+apt-get -y install libaio1
+
+cd /tmp
+rm -rf /tmp/work
+mkdir /tmp/work
+cd /tmp/work
+
+tar zxf ~hgj/Downloads/v11.5_linuxx64_dec.tar.gz
+cd server_dec
+
+./db2setup -f sysreq
+
+Onderstaande zijn de uitzonderingen op de defaults
+
+    - Bij Configuration de directory op "/opt/db2" gezet.
+    - Bij Configuration op "Custom" geklikt.
+    - Bij Configuration op "I agree to the IBM terms" geklikt.
+
+    - Bij Features "Getting started" uitgezet
+    - Bij Features "Application Development tools" aangezet
+
+    - Bij Instance owner voor Existing user "db2" gekozen.
+
+    - Bij Fenced user voor Existing user "db2" gekozen (de waarschuwing genegeerd met 'continue')
+
+    - Bij Instance communication "Autostart the instance at system startup" uitgezet.
+
+    - Post install steps genegeerd
+
+cd /tmp
+rm -rf /tmp/work
+rm ~hgj/Downloads/v11.5_linuxx64_dec.tar.gz
+
+--------------
+MQ installatie
+--------------
+
+dpkg -l | grep ibmmq | awk '{print $2}' | xargs -n1 sudo apt-get purge -y
+
+cd /tmp
+rm -rf /tmp/work
+mkdir /tmp/work
+cd /tmp/work
+
+tar zxf ~hgj/Downloads/mqadv_dev914_ubuntu_x86-64.tar.gz
+
+cd MQServer
+
+./mqlicense.sh -accept
+
+rm ibmmq-msg-*
+apt install ./*.deb
+
+cd /tmp
+rm -rf /tmp/work
+rm ~hgj/Downloads/mqadv_dev914_ubuntu_x86-64.tar.gz
+
+( opmerkingen over niet de juiste limiten negeren, we gaan geen zware productie draaien )
+
+
+---------------
+ACE Installatie
+---------------
+
+cd /opt 
+
+tar zxf ~hgj/Downloads/11.0.0.7-ACE-LINUX64-DEVELOP.tar.gz
+
+mv ace-11.0.0.7 mqsi
+
+cd mqsi
+./ace make registry global accept license silently
+
+cd /tmp
+rm -rf /tmp/work 
+
+sed -i 's/echo mqsiprofile repetition disallowed/return 1/g' /opt/mqsi/server/bin/mqsiprofile
+
+chown -R hgj:mqbrkrs /var/mqsi
+chown -R hgj:mqbrkrs /opt/mqsi
+
+rm ~hgj/Downloads/11.0.0.7-ACE-LINUX64-DEVELOP.tar.gz
+
+
+
+----------------------------
+Add own user to the 3 groups
+----------------------------
+
+usermod -aG db2,mqm,mqbrkrs hgj
+
+
+
+----------------------------------
+Optioneeel, datastudio installatie
+----------------------------------
+
+https://www.ibm.com/us-en/marketplace/ibm-data-studio
+
+cd /tmp
+rm -rf /tmp/work
+mkdir /tmp/work
+cd /tmp/work
+
+tar zxf ~hgj/Downloads/ibm_ds4130_lin.tar.gz
+
+./imLauncherLinux.sh
+
+- Als locatie voor "Installation manager" voor "/opt/sdp/manager" gekozen.
+- Als locatie voor "Shared" voor               "/opt/sdp/shared" gekozen.
+- Als locatie voor "IBM Data Studio" voor      "/opt/sdp/datastudio" gekozen.
+
+cd /tmp
+rm -rf /tmp/work
+rm ~hgj/Downloads/ibm_ds4130_lin.tar.gz
+
+
+
+
+
+------
+reboot
+------
+
+reboot
+
+( vaag dat die reboot nodig is, dit snap ik niet helemaal, maar het loste wat problemen op )
+
+
+
+
+
+============================
+Test setup van DB2, MQ & ACE
+============================
+
+
+LET OP: De commando's in deze file met je eigen user uitvoeren en niet met root
+
+
+----------------------------------
+db2/mq/ace omgevingen script maken
+----------------------------------
+
+mkdir -p ~/scripts
+
+echo 'export ODBCINI=/var/mqsi/odbc/odbc.ini'   >  ~/scripts/settings
+echo 'export ODBCSYSINI=/var/mqsi/odbc'         >> ~/scripts/settings
+echo ''                                         >> ~/scripts/settings
+echo '. /var/db2/sqllib/db2profile'             >> ~/scripts/settings
+echo '. /opt/mqm/bin/setmqenv -n Installation1' >> ~/scripts/settings
+echo '. /opt/mqsi/server/bin/mqsiprofile'       >> ~/scripts/settings
+
+
+-----------------------
+Omgevingen actief maken
+-----------------------
+
+. ~/scripts/settings
+
+(sourcen en niet aanroepen, regel begint met 'punt spatie' )
+
+
+---------
+DB2 setup
+---------
+
+db2start	
+db2 "create database DB"
+db2 "connect to DB"
+db2 "create schema SCHEMA"
+db2 "create table SCHEMA.TABLE (KEY CHAR(5), VALUE CHAR(5))"
+db2 "insert into SCHEMA.TABLE VALUES('Hello', 'World')"
+db2 "select * from SCHEMA.TABLE"
+
+(de create database duurt erg lang)
+
+
+--------
+MQ setup
+--------
+crtmqm -c "ACE Demo" -lc -q -p 1414 -u DEAD QM
+strmqm QM
+echo "DEFINE QLOCAL(DEAD)"   | runmqsc QM
+echo "DEFINE QLOCAL(INPUT)"  | runmqsc QM
+
+
+---------
+ACE setup
+---------
+
+mkdir -p /var/mqsi/odbc
+
+echo '[ODBC Data Sources]'                      >  /var/mqsi/odbc/odbc.ini
+echo 'DB=IBM DB2 ODBC Driver'                   >> /var/mqsi/odbc/odbc.ini
+echo ''                                         >> /var/mqsi/odbc/odbc.ini
+echo '[DB]'                                     >> /var/mqsi/odbc/odbc.ini
+echo 'DRIVER=/opt/db2/lib64/libdb2o.so'         >> /var/mqsi/odbc/odbc.ini
+echo 'Description=IBM DB2 ODBC Database'        >> /var/mqsi/odbc/odbc.ini
+echo 'Database=DB'                              >> /var/mqsi/odbc/odbc.ini
+echo ''                                         >> /var/mqsi/odbc/odbc.ini
+echo '[ODBC]'                                   >> /var/mqsi/odbc/odbc.ini
+echo 'InstallDir=/opt/mqsi/server/ODBC/drivers' >> /var/mqsi/odbc/odbc.ini
+echo 'UseCursorLib=0'                           >> /var/mqsi/odbc/odbc.ini
+echo 'IANAAppCodePage=4'                        >> /var/mqsi/odbc/odbc.ini
+echo 'UNICODE=UTF-8'                            >> /var/mqsi/odbc/odbc.ini
+
+echo '[ODBC]'                                   >  /var/mqsi/odbc/odbcinst.ini
+echo 'Trace=no'                                 >> /var/mqsi/odbc/odbcinst.ini
+echo 'TraceFile=/tmp/ace/db2_trace.txt'         >> /var/mqsi/odbc/odbcinst.ini
+echo 'Threading=2'                              >> /var/mqsi/odbc/odbcinst.ini
+
+chmod 755 /var/mqsi/odbc
+chmod 664 /var/mqsi/odbc/odbc.ini
+chmod 755 /var/mqsi/odbc/odbcinst.ini
+
+/opt/mqsi/server/sample/wmq/iib_createqueues.sh QM hgj
+ 
+mkdir /var/mqsi/logs
+mkdir /var/mqsi/servers
+
+mqsicreateworkdir /var/mqsi/servers/server
+mqsisetdbparms -w /var/mqsi/servers/server -n DB -u hgj -p ww
+
+nohup IntegrationServer --name server \
+      --work-dir /var/mqsi/servers/server \
+      --mq-queue-manager-name QM \
+      > /var/mqsi/logs/server.log 2>&1 &
+
+Met onderstaande commando's kun je kijken of de Integration Server actief is.
+
+ps -ef | grep Integration
+cat /var/mqsi/logs/server.log
+
+Of kijk in de browser naar de web admin
+
+http://localhost:7600/
+
+
+Test flow maken
+===============
+
+Ok, tijd om een demo flow te maken, start de toolkit op met onderstaand commando:
+
+/opt/mqsi/ace toolkit
+
+Connect met de ACE Server bij "Integration Servers" 
+    Host: localhost
+    Port: 7600
+
+Maak een test flow die:
+ - Met een MQInput node een XML bericht leest van de queue INPUT.
+ - In een Compute node een database lookup doet met de waarde uit het xml element <demo><key>
+ - Het resultaat met een FileOutput node naar de file /tmp/demo.xml schrijft.
+
+Properties:
+    MQInput:    Queue name:     INPUT
+    MQInput:    Message Domain: XMLNSC
+    Compute:    Datasource:     DB
+    FileOutput  Directory       /tmp/
+    FileOutput  File            demo.xml
+
+Hieronder de ESQL
+
+SET OutputRoot.XMLNSC.first =
+	THE(SELECT *
+	FROM Database.SCHEMA.TABLE AS A
+	WHERE A.KEY = InputRoot.XMLNSC.test.key);
+
+RETURN TRUE;
+
+Deploy deze flow (drag-and-drop naar server bij Integration Server)
+
+Zet een test bericht op de INPUT queue van deze demo:
+
+echo '<test><key>Hello</key></test>' | /opt/mqm/samp/bin/amqsput INPUT
+
+Bekijk het resultaat van de test.
+
+cat /tmp/demo.xml
+
+

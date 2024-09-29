@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Private_Archive.subflow="Private/Archive.subflow" xmlns:com_ibm_connector_kafka_ComIbmOutput.msgnode="com/ibm/connector/kafka/ComIbmOutput.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="Output/Kafka.subflow" nsPrefix="Output_Kafka.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.topicName" name="topicName" lowerBound="1" defaultValueLiteral="topic">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.bootstrapServers" name="bootstrapServers" lowerBound="1" defaultValueLiteral="localhost:9092">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.clientId" name="clientId" defaultValueLiteral="client">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="Kafka" bundleName="Output/Kafka" pluginId="ESB"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESB/icons/full/obj16/Kafka.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESB/icons/full/obj30/Kafka.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="29,45">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="Output/Kafka" pluginId="ESB"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="472,47">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="Output/Kafka" pluginId="ESB"/>
+      </nodes>
+      <nodes xmi:type="Private_Archive.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="103,44" type="kafka" action="output/before">
+        <translation xmi:type="utility:ConstantString" string="Archive/before"/>
+      </nodes>
+      <nodes xmi:type="Private_Archive.subflow:FCMComposite_1" xmi:id="FCMComposite_1_4" location="327,48" type="kafka" action="output/after">
+        <translation xmi:type="utility:ConstantString" string="Archive/after"/>
+      </nodes>
+      <nodes xmi:type="com_ibm_connector_kafka_ComIbmOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="212,45" connectorName="Kafka" topicName="topic" bootstrapServers="localhost:9092" clientId="client" useClientIdSuffix="true" acks="0" timeout="60" securityProtocol="PLAINTEXT" sslProtocol="TLSv1.2" validateMaster="none" validateFailureAction="exception">
+        <translation xmi:type="utility:ConstantString" string="KafkaProducer"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_3" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.kafka.KafkaTopicNameEditor" configurable="true" describedAttribute="Property.topicName">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.topicName" bundleName="com/ibm/connector/kafka/ComIbmOutput" pluginId="com.ibm.etools.mft.ibmnodes.definitions"/>
+        <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.kafka.KafkaBootstrapServerEditor" configurable="true" describedAttribute="Property.bootstrapServers">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.bootstrapServers" bundleName="com/ibm/connector/kafka/ComIbmOutput" pluginId="com.ibm.etools.mft.ibmnodes.definitions"/>
+          <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.kafka.KafkaClientIDEditor" configurable="true" describedAttribute="Property.clientId">
+            <propertyName xmi:type="utility:TranslatableString" key="Property.clientId" bundleName="com/ibm/connector/kafka/ComIbmOutput" pluginId="com.ibm.etools.mft.ibmnodes.definitions"/>
+          </propertyDescriptor>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.topicName" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="com/ibm/connector/kafka/ComIbmOutput.msgnode#Property.topicName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.bootstrapServers" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="com/ibm/connector/kafka/ComIbmOutput.msgnode#Property.bootstrapServers"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.clientId" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="com/ibm/connector/kafka/ComIbmOutput.msgnode#Property.clientId"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

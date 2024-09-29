@@ -1,0 +1,548 @@
+BROKER SCHEMA Private
+
+
+CREATE COMPUTE MODULE Archive
+
+	DECLARE type    EXTERNAL CHAR 'xxx';
+	DECLARE action  EXTERNAL CHAR 'xxx';
+ 
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN END;
+
+		IF NOT EXISTS(Environment.Shared.Archive[]) THEN
+			SET	Environment.Shared.Archive.id		= UUIDASCHAR;
+			SET Environment.Shared.Archive.start	= CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd.HHmmss.SSSSSS');
+			SET Environment.Shared.Archive.seq		= 0;
+		END IF;
+
+		IF RIGHT(action, 5) <> 'after' THEN 	
+			SET Environment.Shared.Archive.seq	= Environment.Shared.Archive.seq + 1;
+		END IF;
+
+		SET	Environment.Shared.Archive.dir = Shared.ArchiveDir() || ApplicationLabel || '/' || MessageFlowLabel || '/' || Environment.Shared.Archive.start || '/' || CAST(Environment.Shared.Archive.seq as CHAR CCSID 1208) || '_' || type || '_' || action ;		
+				
+		DECLARE Event REFERENCE TO Environment;		
+		CREATE LASTCHILD OF Environment.Shared.Archive.Events AS Event NAME 'Event';
+
+		IF	Environment.Shared.Archive.seq	= 1 THEN
+			SET Event.archive = Environment.Shared.Archive.id;
+		END IF;
+		
+		SET Event.type	 = type;
+		SET Event.action = action;
+		SET	Event.id	 = UUIDASCHAR;
+		SET	Event.time	 = CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd.HHmmss.SSSSSS');
+		SET	Event.dir	 = Environment.Shared.Archive.dir;
+
+		IF EXISTS(InputRoot.BLOB.BLOB[]) THEN
+			CALL Body_Blob (Event);
+		ELSE
+			CALL Body_Bitstream (Event);
+		END IF;
+		
+		CALL Local        (Event);
+		CALL Headers      (Event);
+		CALL EnvironmentX (Event);
+		CALL ExceptionX   (Event);
+		CALL Info         (Event);
+		CALL Events       (Event);
+		 
+		IF LEFT(action, 5) = 'catch' or left(action, 7) = 'failure' THEN
+			CALL Mail (Event, InputExceptionList);
+		END IF;
+		
+		RETURN TRUE;
+		
+	END;
+		
+	CREATE PROCEDURE Mail (IN Event REFERENCE, IN refException REFERENCE) BEGIN
+
+		DECLARE nbr  INT;
+      	DECLARE walk REFERENCE TO InputExceptionList.*[1];
+    
+        WHILE walk.Number IS NOT NULL DO        	
+        	SET nbr = walk.Number;
+            MOVE walk LASTCHILD;
+        END WHILE;
+						                            
+		IF action = 'failure' AND nbr = 2652 THEN
+			RETURN;
+		END IF;
+		
+		IF EXISTS (InputRoot.MQMD[]) and InputRoot.MQMD.BackoutCount > 0 THEN
+			RETURN;
+		END IF;
+			 
+		DECLARE mime REFERENCE TO Environment;
+		CREATE LASTCHILD OF Environment as mime DOMAIN('MIME') name 'MIME';
+		
+		SET mime.Subject = getExceptionText(refException);
+		
+		CALL Attachment (mime, '', 'text/plain;',  CAST(BuildMessage(refException) AS BLOB CCSID 1208));
+
+		FOR file AS Event.Files.file[] DO
+
+			SET OutputLocalEnvironment.Destination.File.Directory	= Environment.Shared.Archive.dir;
+			SET OutputLocalEnvironment.Destination.File.Name 		= file;
+			
+			PROPAGATE TO TERMINAL 'out1';
+
+			IF POSITION('.xml' IN file) > 0 THEN
+				CALL Attachment (mime, file, 'application/xml;', Environment.FileData);
+			ELSE
+				CALL Attachment (mime, file, 'text/plain;',      Environment.FileData);
+			END IF;
+		
+		END FOR;
+
+		SET OutputRoot.Properties.CodedCharSetId = 1208;		
+		SET OutputRoot.Properties.Encoding       = 546;		
+		SET OutputRoot.Properties.ContentType    = 'multipart/mixed; boundary="--' || UUIDASCHAR || '"';
+
+		SET OutputRoot.EmailOutputHeader.To = 'herbert@groot.jebbink.nl';
+
+		SET OutputRoot.MIME = Environment.MIME;
+
+		PROPAGATE TO TERMINAL 'out2';
+			
+	END;
+
+	CREATE FUNCTION BuildMessage (IN refException REFERENCE) RETURNS CHAR BEGIN
+	
+		DECLARE lf CHAR CAST(x'0A' as CHAR CCSID 1208);
+		
+		RETURN	'Goedendag,' 
+			|| 	lf || lf
+			||	'Er is een probleem opgetreden in flow ' || MessageFlowLabel || ' op Integration Server ' || ExecutionGroupLabel || '.'
+			|| 	lf || lf
+			||  getExceptionTree (refException)
+			|| 	lf
+			||	'Zie de bijlagen voor de details.'
+			|| 	lf || lf
+			||	'Mvg, ACE';
+		
+	END;
+	 
+	CREATE PROCEDURE Attachment (INOUT mime REFERENCE, IN file CHAR, IN type CHAR, IN bijlage BLOB)
+
+	BEGIN
+
+		IF TRIM(COALESCE(bijlage, '')) <> '' THEN
+			
+			DECLARE attachment	REFERENCE TO OutputRoot;
+			DECLARE data 		REFERENCE TO OutputRoot;
+	
+			CREATE LASTCHILD OF mime.Parts as attachment name 'Part';
+			
+			IF file = '' THEN
+				SET attachment."Content-Type"        = type;
+			ELSE
+				SET attachment."Content-Type"        = type || ' name="'        || file || '"';
+				SET attachment."Content-Disposition" = 'attachment; filename="' || file || '"';
+				SET attachment."Content-Description" = 'Attached file "'        || file || '"';
+			END IF;
+																		
+			SET attachment."Content-Transfer-Encoding" = 'base64';
+			
+			CREATE LASTCHILD OF attachment.Data as data DOMAIN('BLOB') name 'BLOB';
+			SET data.BLOB = CAST(BASE64ENCODE(bijlage) AS BLOB CCSID 1208);
+
+		END IF;
+		
+	END;
+
+	CREATE PROCEDURE Body_Blob (IN Event REFERENCE) BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE'%' BEGIN
+			CALL Body_BitStream (Event); 
+			RETURN;
+		END;
+
+		CALL setup_output ('Body.txt');
+
+       	SET OutputRoot.Properties.CodedCharSetId 	= InputRoot.Properties.CodedCharSetId;
+        SET OutputRoot.Properties.Encoding 		 	= InputRoot.Properties.Encoding;
+		
+		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
+		
+		PROPAGATE;
+		
+		SET Event.bodyType = 'BLOB';
+		
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Body.txt';
+		
+	END;
+		
+	CREATE PROCEDURE Body_BitStream (IN Event REFERENCE) BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			CALL Body_BitStream2 (Event);
+			RETURN;
+		END;
+
+		CALL setup_output ('Body.txt');
+
+       	SET OutputRoot.Properties.CodedCharSetId 	= InputRoot.Properties.CodedCharSetId;
+        SET OutputRoot.Properties.Encoding 		 	= InputRoot.Properties.Encoding;
+
+		DECLARE options INTEGER BITOR(RootBitStream, ValidateNone);
+
+      	SET OutputRoot.BLOB.BLOB = ASBITSTREAM(InputRoot.*[<] OPTIONS options );
+ 				
+		PROPAGATE;
+		
+		SET Event.bodyType = 'RootBitStream';
+			
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Body.txt';
+		
+	END;
+
+	CREATE PROCEDURE Body_BitStream2 (IN Event REFERENCE) BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN 
+			CALL Body_XML (Event);
+			RETURN;
+		END;
+
+		CALL setup_output ('Body.txt');
+
+       	SET OutputRoot.Properties.CodedCharSetId 	= InputRoot.Properties.CodedCharSetId;
+        SET OutputRoot.Properties.Encoding 		 	= InputRoot.Properties.Encoding;
+
+		DECLARE options INTEGER BITOR(FolderBitStream, ValidateNone);
+
+      	SET OutputRoot.BLOB.BLOB = ASBITSTREAM(InputRoot.*[<] OPTIONS options CCSID InputRoot.Properties.CodedCharSetId ENCODING InputRoot.Properties.Encoding);
+ 				
+		PROPAGATE;
+
+		SET Event.bodyType = 'FolderBitStream';
+		
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Body.txt';
+		
+	END;
+
+	CREATE PROCEDURE Body_XML (IN Event REFERENCE) BEGIN
+
+		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE'%' BEGIN
+			CALL Body_Oops (Event); 
+			RETURN;
+		END;
+
+		CALL setup_output ('Body.xml');
+
+       	SET OutputRoot.Properties.CodedCharSetId	= InputRoot.Properties.CodedCharSetId;
+        SET OutputRoot.Properties.Encoding 		 	= InputRoot.Properties.Encoding;
+
+      	SET OutputRoot.XMLNSC.input.body = InputBody;
+ 				
+		PROPAGATE;
+
+		SET Event.bodyType = 'InputBody';
+		
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Body.xml';
+		
+	END;
+
+	CREATE PROCEDURE Body_Oops (IN Event REFERENCE) BEGIN
+
+		CALL setup_output ('Body.txt'); 
+
+       	SET OutputRoot.Properties.CodedCharSetId	= 1208;
+        SET OutputRoot.Properties.Encoding 		 	= 546;
+
+      	SET OutputRoot.BLOB.BLOB = CAST('Failed to convert input message to a BLOB' AS BLOB CCSID 1208);
+ 				
+		PROPAGATE;
+		
+		SET Event.bodyType = 'Oops';		
+		
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Body.txt';
+		
+	END;
+	
+	CREATE PROCEDURE Local (IN Event REFERENCE) BEGIN
+
+		IF NOT EXISTS(InputLocalEnvironment.*[]) THEN
+			RETURN;
+		END IF;
+				
+		CALL setup_output ('Local.xml');
+
+		SET OutputRoot.XMLNSC.local = InputLocalEnvironment;
+		
+		PROPAGATE;
+
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Local.xml';
+		
+	END;
+
+	CREATE PROCEDURE Headers (IN Event REFERENCE) BEGIN	
+		
+		DECLARE header CHAR;
+			
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER CARDINALITY(InputRoot.*[]);
+		
+		WHILE I <= J DO
+
+			SET header = FIELDNAME(InputRoot.*[I]);
+				
+			IF header <> 'BLOB' THEN
+
+				CALL setup_output (header || '.xml');
+
+				SET OutputRoot.XMLNSC.{header} = InputRoot.*[I];
+				
+				PROPAGATE;
+
+				CREATE LASTCHILD OF Event.Files NAME 'file' VALUE header || '.xml';
+
+			END IF;
+	
+			SET I = I + 1;	
+		
+		END WHILE;
+		
+	END;
+
+	CREATE PROCEDURE EnvironmentX (IN Event REFERENCE) BEGIN	
+		
+		IF Event.action = 'output/after' THEN 	
+			RETURN;
+		END IF;
+				
+		CALL setup_output ('Environment.xml');
+
+		SET OutputRoot.XMLNSC.environment = Environment;
+		SET OutputRoot.XMLNSC.Environment.Shared.Archive = NULL;
+		
+		PROPAGATE;
+
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Environment.xml';
+		
+	END;
+
+	CREATE PROCEDURE ExceptionX (IN Event REFERENCE) BEGIN	
+
+		IF NOT EXISTS(InputExceptionList.*[]) THEN
+			RETURN;
+		END IF;
+
+		CALL setup_output ('Exception.xml');
+
+		SET OutputRoot.XMLNSC.exception = InputExceptionList;
+		
+		PROPAGATE;
+
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Exception.xml';
+		
+	END;
+
+	CREATE PROCEDURE Info (IN Event REFERENCE) BEGIN	
+
+		IF Event.action <> 'input' THEN 	
+			RETURN;
+		END IF;
+		
+		CALL setup_output ('Info.xml');
+
+		SET OutputRoot.XMLNSC.info.mq.name 	= QueueManagerName; 
+
+		SET OutputRoot.XMLNSC.info.node.name 	= BrokerName;
+		SET OutputRoot.XMLNSC.info.node.version = BrokerVersion;
+		SET OutputRoot.XMLNSC.info.node.os	 	= Family;
+
+		SET OutputRoot.XMLNSC.info.server.name	= ExecutionGroupLabel;
+		SET OutputRoot.XMLNSC.info.server.user 	= BrokerUserId;
+		SET OutputRoot.XMLNSC.info.server.id	= ExecutionGroupName;
+		SET OutputRoot.XMLNSC.info.server.pid	= ProcessId;
+		SET OutputRoot.XMLNSC.info.server.path 	= WorkPath;
+
+		SET OutputRoot.XMLNSC.info.flow.name 			= MessageFlowLabel;
+		SET OutputRoot.XMLNSC.info.flow.app 			= ApplicationLabel;
+		SET OutputRoot.XMLNSC.info.flow.lib 			= LibraryLabel;
+		SET OutputRoot.XMLNSC.info.flow.instances 		= AdditionalInstances;
+		SET OutputRoot.XMLNSC.info.flow.commitCount 	= CommitCount;
+		SET OutputRoot.XMLNSC.info.flow.commitInterval	= CommitInterval;
+		SET OutputRoot.XMLNSC.info.flow.coordinated 	= CoordinatedTransaction;
+		SET OutputRoot.XMLNSC.info.flow.maxMsgSec 		= MaximumRateMsgsPerSec;
+		SET OutputRoot.XMLNSC.info.flow.notificaton 	= NotificationThresholdMsgsPerSec;
+		SET OutputRoot.XMLNSC.info.flow.policy 			= WlmPolicy;
+				
+		PROPAGATE;
+
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Info.xml';
+		
+	END;
+
+	CREATE PROCEDURE Events (IN Event REFERENCE) BEGIN	
+		
+		CALL setup_output ('Events.xml');
+
+		CREATE LASTCHILD OF Event.Files NAME 'file' VALUE 'Events.xml';
+
+		SET OutputRoot.XMLNSC.Events = Environment.Shared.Archive.Events;
+				
+		PROPAGATE;
+		
+	END;
+
+	CREATE PROCEDURE setup_output (IN file CHAR) 
+	
+		BEGIN	
+			
+			SET OutputRoot.Properties = NULL;
+	
+			CREATE LASTCHILD OF OutputRoot DOMAIN('Properties') NAME('Properties');
+			CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC')     NAME('XMLNSC');
+			
+	       	SET OutputRoot.Properties.CodedCharSetId = 1208;
+	        SET OutputRoot.Properties.Encoding 		 = 546;
+					
+			SET OutputLocalEnvironment.Destination.File.Directory	= Environment.Shared.Archive.dir;
+			SET OutputLocalEnvironment.Destination.File.Name		= file;
+				
+		END;
+	
+END MODULE;
+
+
+CREATE FUNCTION getExceptionTree (IN refException REFERENCE) RETURNS CHAR
+
+BEGIN
+
+	  DECLARE text CHAR '';
+	  DECLARE lf   CHAR CAST(x'0A' as CHAR CCSID 1208);
+
+      DECLARE anException, anInsert REFERENCE TO refException;
+
+	  MOVE anException TO refException.*[1];
+	  
+      WHILE LASTMOVE(anException) DO
+      	
+	      MOVE anInsert TO anException.Insert[1];
+
+		  SET text = text || COALESCE(anException.Text, 'n/a');
+	      
+	      WHILE LASTMOVE(anInsert) DO
+    	        SET text = text || '; ' || COALESCE(anInsert.Text, '');
+        	    MOVE anInsert NEXTSIBLING NAME 'Insert';
+          END WHILE;
+      		
+    	  SET text = text || lf;
+    	  
+          MOVE anException LASTCHILD;
+            
+      END WHILE;
+
+	  RETURN text;
+	  
+END;
+
+
+-- 
+-- Een IIB exception omzetten naar een tekst regel voor gebruik in een fout response bericht.
+-- (de linebreaks in onderstaande voorbeelden zijn er in werkelijkheid niet)
+-- 
+-- brokerExceptionXml:          The value "000" is not valid with respect to the pattern facet for type "time",
+--                              line: 12,
+--                              column: 20,
+--                              element: /BerichtRequest_1.0/Header/Bericht/tijd
+--
+-- brokerExceptionGeneral:      A schema validation error has occurred while parsing the XML document;
+--                              6009;
+--                              1;
+--                              12;
+--                              20;
+--                              cvc-pattern-valid: The value "000" is not valid with respect to the pattern facet for type "time".;
+--                              /Root/XMLNSC/BerichtRequest_1.0/Header/Bericht/tijd;
+
+CREATE FUNCTION getExceptionText (IN refException REFERENCE) RETURNS CHAR
+
+BEGIN
+
+      DECLARE startException, lastException, anInsert REFERENCE TO refException.*[1];
+
+      WHILE LASTMOVE(startException) AND startException.Number IS NOT NULL DO
+            MOVE lastException TO startException;
+            MOVE startException LASTCHILD;
+      END WHILE;
+
+      DECLARE code CHAR COALESCE(lastException.Number, '9999');
+
+      -- Details ophalen, in 2 smaakjes.
+      IF code IN ('5025', '5026') THEN
+            RETURN brokerExceptionXml     (lastException);
+      ELSE
+            RETURN brokerExceptionGeneral (lastException);
+      END IF;
+
+END;
+
+CREATE FUNCTION brokerExceptionXml (IN lastException REFERENCE) RETURNS CHAR
+
+-- Specifieke mapping voor XML validatie fouten,
+-- zou ook door brokerExceptionGeneral gedaan kunnen worden, maar is zo iets meer leesbaarder voor een mens.
+
+BEGIN
+
+      DECLARE error CHAR TRIM(COALESCE(lastException.Insert[5].Text, '?'));
+      DECLARE part  CHAR TRIM(COALESCE(lastException.Insert[6].Text, '?'));
+      DECLARE pos1, pos2 INT;
+
+      -- De module naam aan het begin van de foutmelding verwijderen.
+      SET pos1 = POSITION (':' IN error);
+      SET pos2 = POSITION (' ' IN error);
+      IF (pos1 > 0 AND pos2 > 0 AND pos1 < pos2) THEN
+            SET error = TRIM(SUBSTRING(error after ':'));
+      END IF;
+
+      -- Punt aan het einde verwijderen.
+      IF RIGHT(error, 1) = '.' THEN
+            SET error = LEFT(error, LENGTH(error)-1);
+      END IF;
+
+      -- Namespaces verwijderen.
+      SET pos1 = POSITION ('{'  IN part);
+      SET pos2 = POSITION ('}:' IN part);
+      WHILE (pos1 > 0 AND pos2 > 0 AND pos2 > pos1) DO
+            SET part = SUBSTRING(part FROM 1 FOR pos1-1) || SUBSTRING(part FROM pos2+2);
+            SET pos1 = POSITION ('{'  IN part);
+            SET pos2 = POSITION ('}:' IN part);
+      END WHILE;
+ 
+      -- Standaard prefixes verwijderen.
+      SET part = REPLACE(part, '/Root/XMLNSC/',     '/');
+      SET part = REPLACE(part, '/XMLNSC/',          '/');
+      SET part = REPLACE(part, '/Envelope/Header/', '/');
+      SET part = REPLACE(part, '/Envelope/Body/',   '/');
+
+      RETURN error
+          || ', line '      || COALESCE(lastException.Insert[3].Text, '?')
+          || ', column '    || COALESCE(lastException.Insert[4].Text, '?')
+          || ', element '   || part;
+ 
+END;
+
+CREATE FUNCTION brokerExceptionGeneral (IN lastException REFERENCE) RETURNS CHAR
+
+-- Alle Insert waarden achter elkaar plakken, gescheiden door het ; teken.
+
+BEGIN
+
+	  DECLARE text CHAR COALESCE(lastException.Text, 'n/a');
+		
+      DECLARE anInsert REFERENCE TO lastException;
+
+      MOVE anInsert TO lastException.Insert[1];
+
+      WHILE LASTMOVE(anInsert) DO
+            SET text = text || '; ' || COALESCE(anInsert.Text, '');
+            MOVE anInsert NEXTSIBLING NAME 'Insert';
+      END WHILE;
+
+	  RETURN text;
+END;

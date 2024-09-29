@@ -1,0 +1,36 @@
+--------------
+dropbox stream
+--------------
+
+sudo apt-get -y install libfuse2
+sudo apt-get -y install python3-pip
+sudo apt-get -y install python3-setuptools
+
+pip3 install wheel
+pip3 install dbxfs
+
+/home/hgj/.local/bin/dbxfs ~/Dropbox
+
+
+
+
+----------------
+Dropbox mirrored
+----------------
+
+sudo wget -O /usr/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py
+sudo chmod 755 /usr/bin/dropbox
+
+cd ~
+wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+
+~/.dropbox-dist/dropboxd 
+
+Instructies volgen, na afloop cntrl-c om de deamon weer te stoppen.
+
+dropbox start
+
+
+
+
+
