@@ -2,13 +2,8 @@
 
 . ~/ace/env
 
-echo 'AllQueueManagers:'              >  /var/mqm/mqs.ini
-echo '   DefaultPrefix=/mq'           >> /var/mqm/mqs.ini
-echo 'LogDefaults:'                   >> /var/mqm/mqs.ini
-echo '   LogDefaultPath=/var/mqm/log' >> /var/mqm/mqs.ini
-
-crtmqm -c "ACE - Administration" -lc -md /mq    -p 1415 -u ADMIN_DEAD ADMIN
-crtmqm -c "ACE - Applications"   -lc -md /mq -q -p 1414 -u APP_DEAD   APP
+crtmqm -c "ACE - Administration" -lc    -p 1415 -u ADMIN_DEAD ADMIN
+crtmqm -c "ACE - Applications"   -lc -q -p 1414 -u APP_DEAD   APP
 
 strmqm ADMIN
 strmqm APP
@@ -18,6 +13,16 @@ strmqm APP
 
 ~/ace/scripts/mqtt.sh APP   1883
 ~/ace/scripts/mqtt.sh ADMIN 1884
+
+echo "DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)" | runmqsc ADMIN
+echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAUSER('herbert')" | runmqsc ADMIN
+echo "ALTER QMGR CONNAUTH('')" | runmqsc ADMIN
+echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc ADMIN
+
+echo "DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)" | runmqsc APP
+echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAUSER('herbert')" | runmqsc APP
+echo "ALTER QMGR CONNAUTH('')" | runmqsc APP
+echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc APP
 
 echo "DEFINE QLOCAL(PUBSUB_ADMIN)" | runmqsc ADMIN
 echo "DEFINE QLOCAL(PUBSUB_APP)"   | runmqsc APP

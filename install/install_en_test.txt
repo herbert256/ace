@@ -1,5 +1,5 @@
 ===========================================================
-DB2 11.5.9.0, MQ 9.4.0.0, ACE 12.0.12.4 Installatie op Linux
+DB2 11.5.9.0, MQ 9.4.0.0, ACE 13.0.1.0 Installatie op Linux
 ===========================================================
 
 Mijn linux user-id is 'herbert', doe nu een zoek/vervang van 'herbert' door je eigen user-id in dit document.
@@ -23,17 +23,16 @@ ACE data: /var/mqsi/
 Software verzamelen
 -------------------
 
-ACE: 12.0.12.4-ACE-LINUX64-DEVELOPER.tar.gz
+ACE: 13.0.1.0-ACE-LINUX64-EVALUATION.tar.gz
 MQ:  9.4.0.0-IBM-MQ-Advanced-for-Developers-UbuntuLinuxX64.tar.gz
 DB2: v11.5.9_linuxx64_server_dec.tar.gz
-
+Eclipse: eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
 
 --------------
 Naar root gaan
 --------------
 
 sudo -i
-
 
 ------------------------
 Groepen & users aanmaken
@@ -59,7 +58,7 @@ cp -R /etc/skel/.profile ~db2
 cp -R /etc/skel/.profile ~mqm
 
 chown -R db2:db2 /var/db2
-chown -R db2:db2 /var/mqm
+chown -R mqm:mqm /var/mqm
 
 chown -R db2:db2 /opt/db2
 chown -R mqm:mqm /opt/mqm
@@ -112,13 +111,13 @@ sudo ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-transfer.so libaws-cpp-sdk-transfe
 cd /usr/lib/x86_64-linux-gnu/
 ln -s libaio.so libaio.so.1
 
+
 --------------
 MQ installatie
 --------------
 
 dpkg -l | grep ibmmq | awk '{print $2}' | xargs -n1 sudo apt-get purge -y
 
-cd /tmp
 rm -rf /tmp/work
 mkdir /tmp/work
 cd /tmp/work
@@ -135,15 +134,26 @@ apt install ./*.deb
 ( opmerkingen over niet de juiste limiten negeren, we gaan geen zware productie draaien )
 
 
+mkdir -p /var/mqm/mqttUser
+useradd mqttUser -p mqm -g mqm -d /var/mqm/mqttUser
+chown -R mqttUser:mqm /var/mqm/mqttUser
+
+cd /opt
+tar xzf /home/herbert/Downloads/eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
+chown -R herbert:herbert eclipse
+https://marketplace.eclipse.org/content/ibm-mq-explorer-version-94/help
+
+
+
 ---------------
 ACE Installatie
 ---------------
 
 cd /opt 
 
-tar zxf ~herbert/Downloads/12.0.12.4-ACE-LINUX64-DEVELOPER.tar.gz
+tar zxf ~herbert/Downloads/13.0.1.0-ACE-LINUX64-EVALUATION.tar.gz
 
-mv ace-11.0.0.7 mqsi
+mv ace-13.0.1.0 mqsi
 
 cd mqsi
 ./ace make registry global accept license silently

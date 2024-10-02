@@ -12,7 +12,7 @@
       <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="118,59" computeExpression="esql://routine/#BuildRequest.Main" computeMode="all">
         <translation xmi:type="utility:ConstantString" string="BuildRequest"/>
       </nodes>
-      <nodes xmi:type="Input_File.subflow:FCMComposite_1" xmi:id="FCMComposite_1_2" location="43,59" inputDirectory="/ace/hello/input" messageDomainProperty="XMLNSC">
+      <nodes xmi:type="Input_File.subflow:FCMComposite_1" xmi:id="FCMComposite_1_2" location="43,59" inputDirectory="/ace/test/hello/input" messageDomainProperty="XMLNSC">
         <translation xmi:type="utility:ConstantString" string="File"/>
       </nodes>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>

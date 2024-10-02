@@ -36,7 +36,6 @@ mkdir -p /ace/file/input
 mkdir -p /ace/file/output
 mkdir -p /ace/log/test
 mkdir -p /ace/log/hello
-mkdir -p /ace/servers
 
 FILES=~/ace/config/*.yaml
 
@@ -47,7 +46,7 @@ do
   s=${f:0:2}
   n="${f%.*}"
   b=~/ace/projects/BARfiles/$n.bar
-  w=/ace/servers/$n
+  w=/var/mqsi/servers/$n
  
   mqsicreateworkdir $w
 
@@ -55,7 +54,7 @@ do
 
   mqsibar -a $b -c -w $w
 
-  mqsisetdbparms -w $w -n DB -u herbert -p ww
+  mqsisetdbparms -w $w -n DB -u herbert -p boika
 
   nohup IntegrationServer --name $n --work-dir $w  < /dev/null > /$w/log/out.txt 2>$w/log/err.txt &
 

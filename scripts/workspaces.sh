@@ -4,10 +4,6 @@
 
 cd /workspaces
 
-tar zxf ~/ace/workspaces/ace.tar.gz
-tar zxf ~/ace/workspaces/mq.tar.gz
-tar zxf ~/ace/workspaces/db2.tar.gz
-
 mkdir -p /ace/log/eclipse
 
 nohup /opt/mqsi/ace toolkit       -data /workspaces/ace < /dev/null > /ace/log/eclipse/ace.log 2>&1 &
