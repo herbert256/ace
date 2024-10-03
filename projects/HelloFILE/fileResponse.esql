@@ -4,7 +4,7 @@ CREATE COMPUTE MODULE Response
 
 	BEGIN
 
-		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/hello/output';
+		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/test/hello/output';
 	  	SET OutputLocalEnvironment.Destination.File.Name      = Environment.Service.FileName;
 		
 		SET OutputRoot.XMLNSC = InputRoot.XMLNSC;

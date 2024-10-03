@@ -1,7 +1,5 @@
 #/bin/sh
 
-. ~/ace/env
-
 FILES=~/ace/config/*.yaml
 
 for p in $FILES

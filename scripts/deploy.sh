@@ -1,7 +1,5 @@
 #/bin/sh
 
-. ~/ace/env
-
 for bar in ~/ace/projects/BARfiles/*.bar
 do
 

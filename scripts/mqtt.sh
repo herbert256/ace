@@ -1,7 +1,5 @@
 #/bin/sh
 
-. ~/ace/env
-
 sudo mkdir -p /var/mqm/mqttUser
 sudo useradd mqttUser -p mqm -g mqm -d /var/mqm/mqttUser
 sudo chown -R mqttUser:mqm /var/mqm/mqttUser

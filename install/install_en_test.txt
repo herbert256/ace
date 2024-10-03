@@ -131,9 +131,6 @@ cd MQServer
 rm ibmmq-msg-*
 apt install ./*.deb
 
-( opmerkingen over niet de juiste limiten negeren, we gaan geen zware productie draaien )
-
-
 mkdir -p /var/mqm/mqttUser
 useradd mqttUser -p mqm -g mqm -d /var/mqm/mqttUser
 chown -R mqttUser:mqm /var/mqm/mqttUser

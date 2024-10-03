@@ -2,8 +2,6 @@
 
 rm -Rf /tmp/ace > /dev/null 2>&1
 
-. ~/ace/env
-
 rm -Rf /ace/build
 
 mkdir /ace/build

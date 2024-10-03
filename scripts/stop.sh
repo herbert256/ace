@@ -1,7 +1,5 @@
 #/bin/sh
 
-. ~/ace/env
-
 killall -s SIGKILL IntegrationServer
 
 db2stop 

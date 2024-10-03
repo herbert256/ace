@@ -1,6 +1,11 @@
 #/bin/sh
 
-. ~/ace/env
+~/ace/scripts/ram.sh /var/mqm
+
+cd /var/mqm
+tar zxf ~/ace/archives/var.mqm.tar.gz
+sudo chown -R mqm:mqm /var/mqm
+sudo chown -R mqttUser:mqm /var/mqm/mqttUser
 
 crtmqm -c "ACE - Administration" -lc    -p 1415 -u ADMIN_DEAD ADMIN
 crtmqm -c "ACE - Applications"   -lc -q -p 1414 -u APP_DEAD   APP
@@ -14,15 +19,15 @@ strmqm APP
 ~/ace/scripts/mqtt.sh APP   1883
 ~/ace/scripts/mqtt.sh ADMIN 1884
 
-echo "DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)" | runmqsc ADMIN
-echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAUSER('herbert')" | runmqsc ADMIN
-echo "ALTER QMGR CONNAUTH('')" | runmqsc ADMIN
-echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc ADMIN
-
 echo "DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)" | runmqsc APP
 echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAUSER('herbert')" | runmqsc APP
 echo "ALTER QMGR CONNAUTH('')" | runmqsc APP
 echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc APP
+
+echo "DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)" | runmqsc ADMIN
+echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAUSER('herbert')" | runmqsc ADMIN
+echo "ALTER QMGR CONNAUTH('')" | runmqsc ADMIN
+echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc ADMIN
 
 echo "DEFINE QLOCAL(PUBSUB_ADMIN)" | runmqsc ADMIN
 echo "DEFINE QLOCAL(PUBSUB_APP)"   | runmqsc APP

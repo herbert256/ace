@@ -1,5 +1,7 @@
 #/bin/sh
 
+~/ace/scripts/ram.sh /kafka
+
 cd /kafka
 
 tar -xzf ~/Downloads/kafka_2.13-3.8.0.tgz

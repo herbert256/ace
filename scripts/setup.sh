@@ -1,35 +1,22 @@
 #/bin/sh
 
-~/ace/scripts/stop.sh > /tmp/aceSto.log 2>&1
+~/ace/scripts/stop.sh > /tmp/aceStop.log 2>&1
 
 ~/ace/scripts/ram.sh /ace
-~/ace/scripts/ram.sh /var/mqm
-~/ace/scripts/ram.sh /var/mqsi
-~/ace/scripts/ram.sh /workspaces
-~/ace/scripts/ram.sh /kafka
 
-cd /workspaces
-tar zxf ~/ace/archives/workspace.ace.tar.gz
-tar zxf ~/ace/archives/workspace.mq.tar.gz
-tar zxf ~/ace/archives/workspace.db2.tar.gz
+mkdir -p /ace/log
+mkdir -p /ace/log/test
+mkdir -p /ace/log/hello
+mkdir -p /ace/log/setup
+mkdir -p /ace/test/hello/input
+mkdir -p /ace/test/hello/output
 
-cd /var/mqm
-tar zxf ~/ace/archives/var.mqm.tar.gz
-sudo chown -R mqm:mqm /var/mqm
-
-#cd /var/mqsi
-#tar zxf ~/ace/archives/var.mqsi.tar.gz
-#sudo chown -R herbert:mqbrkrs /var/mqsi
-
-mkdir /ace/log
-
-~/ace/scripts/db2.sh           > /ace/log/db2.txt           2>&1
-~/ace/scripts/mq.sh            > /ace/log/mq.txt            2>&1
-~/ace/scripts/ace.sh           > /ace/log/ace.txt           2>&1
-~/ace/scripts/kafka.sh         > /ace/log/kafka.txt         2>&1
-#~/ace/scripts/deploy.sh        > /ace/log/deploy.txt        2>&1
-~/ace/scripts/workspaces.sh    > /ace/log/workspaces.txt    2>&1
-~/ace/scripts/monitoring.sh    > /ace/log/monitoring.txt    2>&1
-~/ace/scripts/statistics.sh    > /ace/log/statistics.txt    2>&1
-~/ace/scripts/resourcestats.sh > /ace/log/resourcestats.txt 2>&1
-~/ace/test/test.sh             > /ace/log/test.txt          2>&1
+~/ace/scripts/db2.sh           > /ace/log/setup/db2.txt           2>&1
+~/ace/scripts/mq.sh            > /ace/log/setup/mq.txt            2>&1
+~/ace/scripts/ace.sh           > /ace/log/setup/ace.txt           2>&1
+~/ace/scripts/kafka.sh         > /ace/log/setup/kafka.txt         2>&1
+~/ace/scripts/workspaces.sh    > /ace/log/setup/workspaces.txt    2>&1
+~/ace/scripts/monitoring.sh    > /ace/log/setup/monitoring.txt    2>&1
+~/ace/scripts/statistics.sh    > /ace/log/setup/statistics.txt    2>&1
+~/ace/scripts/resourcestats.sh > /ace/log/setup/resourcestats.txt 2>&1
+~/ace/test/test.sh             > /ace/log/setup/test.txt          2>&1

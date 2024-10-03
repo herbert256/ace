@@ -1,5 +1,10 @@
 #/bin/sh
 
+rm -Rf /ace/data/*
+rm -Rf /ace/events/*
+rm -Rf /ace/log/test/*
+rm -Rf /ace/log/hello/*
+
 nohup ~/ace/test/admin.sh       < /dev/null > /ace/log/test/admin.txt  2>&1 &
 nohup ~/ace/test/goed.sh        < /dev/null > /ace/log/test/goed.txt   2>&1 &
 nohup ~/ace/test/fout.sh        < /dev/null > /ace/log/test/fout.txt   2>&1 &

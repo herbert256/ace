@@ -1,7 +1,5 @@
 #/bin/sh
 
-. ~/ace/env
-
 cd ~/asleep 3
 killall -s SIGKILL IntegrationServer
 sleep 1

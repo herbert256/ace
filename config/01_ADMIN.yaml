@@ -3,7 +3,7 @@ serverConfVersion: 1
 defaultQueueManager: 'ADMIN'
 
 Log:
-  eventLog: '/ace/servers/01_ADMIN/log/event.txt'
+  eventLog: '/var/mqsi/servers/01_ADMIN/log/event.txt'
 
 RestAdminListener:
   port: 7601
