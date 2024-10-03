@@ -1,6 +1,6 @@
 #/bin/sh
 
-~/ace/scripts/ram.sh /workspaces
+rm -Rf /workspaces/*
 
 cd /workspaces
 

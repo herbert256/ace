@@ -53,6 +53,8 @@ CREATE COMPUTE MODULE Archive
 	END;
 		
 	CREATE PROCEDURE Mail (IN Event REFERENCE, IN refException REFERENCE) BEGIN
+		
+		RETURN;
 
 		DECLARE nbr  INT;
       	DECLARE walk REFERENCE TO InputExceptionList.*[1];

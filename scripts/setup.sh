@@ -3,6 +3,10 @@
 ~/ace/scripts/stop.sh > /tmp/aceStop.log 2>&1
 
 ~/ace/scripts/ram.sh /ace
+~/ace/scripts/ram.sh /var/mqsi
+~/ace/scripts/ram.sh /var/mqm
+~/ace/scripts/ram.sh /workspaces
+~/ace/scripts/ram.sh /kafka
 
 mkdir -p /ace/log
 mkdir -p /ace/log/test
@@ -16,7 +20,4 @@ mkdir -p /ace/test/hello/output
 ~/ace/scripts/ace.sh           > /ace/log/setup/ace.txt           2>&1
 ~/ace/scripts/kafka.sh         > /ace/log/setup/kafka.txt         2>&1
 ~/ace/scripts/workspaces.sh    > /ace/log/setup/workspaces.txt    2>&1
-~/ace/scripts/monitoring.sh    > /ace/log/setup/monitoring.txt    2>&1
-~/ace/scripts/statistics.sh    > /ace/log/setup/statistics.txt    2>&1
-~/ace/scripts/resourcestats.sh > /ace/log/setup/resourcestats.txt 2>&1
 ~/ace/test/test.sh             > /ace/log/setup/test.txt          2>&1

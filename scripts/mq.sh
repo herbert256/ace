@@ -1,6 +1,6 @@
 #/bin/sh
 
-~/ace/scripts/ram.sh /var/mqm
+rm -Rf /var/mqm/*
 
 cd /var/mqm
 tar zxf ~/ace/archives/var.mqm.tar.gz

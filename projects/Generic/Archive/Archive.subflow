@@ -17,7 +17,7 @@
       <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="25,70">
         <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="Archive/Archive" pluginId="Generic"/>
       </nodes>
-      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="143,145">
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="161,164">
         <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="Archive/Archive" pluginId="Generic"/>
       </nodes>
       <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="94,70">

@@ -66,9 +66,11 @@ CREATE COMPUTE MODULE Events
 		
 		IF xleft = '<' and xright = '>' THEN
 			SET ext = '.xml';
+		ELSEIF xleft = '{' and xright = '}' THEN
+			SET ext = '.json';
 		END IF;
 				  
-		SET OutputLocalEnvironment.Destination.File.Directory = DirName () || '/raw/' || TRIM(InputRoot.MQMD.SourceQueue) || '/'  || TRIM(InputRoot.MQRFH2.psc.Topic);
+		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/raw/' || TRIM(InputRoot.MQMD.SourceQueue) || '/'  || TRIM(InputRoot.MQRFH2.psc.Topic);
 	  	SET OutputLocalEnvironment.Destination.File.Name      = FileName ()  || ext;
 	  	
         SET OutputRoot = InputRoot;
@@ -113,9 +115,11 @@ CREATE COMPUTE MODULE DefaultX
 		
 		IF xleft = '<' and xright = '>' THEN
 			SET ext = '.xml';
+		ELSEIF xleft = '{' and xright = '}' THEN
+			SET ext = '.json';
 		END IF;
 		
-		SET OutputLocalEnvironment.Destination.File.Directory = DirName () || Environment.Topic;
+		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/events/' || Environment.Topic;
 	  	SET OutputLocalEnvironment.Destination.File.Name      = FileName()  || ext;
 	  	
 		SET OutputRoot.BLOB = InputRoot.BLOB;
@@ -201,9 +205,6 @@ CREATE COMPUTE MODULE Stats
 
 END MODULE;
 
-CREATE FUNCTION DirName () RETURNS CHAR BEGIN
-	RETURN	'/ace/data/events/';
-END;
 
 CREATE FUNCTION FileName () RETURNS CHAR BEGIN
 	RETURN	CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd_HHmmss_SSSSSS_') || CAST(FLOOR(RAND() * 999999) as CHAR FORMAT '000000');

@@ -1,5 +1,7 @@
 serverConfVersion: 1
 
+defaultQueueManager: 'ADMIN'
+
 RestAdminListener:
   port: 7606
 

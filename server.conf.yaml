@@ -243,7 +243,7 @@ Events:
       #elkConnections: ''        # Name of the ELK connection to use, for example 'elkConnection1', must be defined in the ELKConnections section below.
     File:
       #enabled: false            # Set true or false, default false
-      #outputFormat: 'json'      # Set comma separated list of one or more of : json,xml. Defaults to 'json'
+      #outputFormat: 'json'format: 'xml'         # Set comma separated list of one or more of : json,xml. Defaults to 'json'
       #filePath: ''              # The file path where the monitoring events file will be written to.
                                  # If this is set to '' then the default path is <work-dir>/config/common/monitoringEvents.
       #numberOfFiles: 4          # The maximum number of files that monitoring event file writing can rotate through.

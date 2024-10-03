@@ -1,12 +1,10 @@
 #/bin/sh
 
-~/ace/scripts/ram.sh /var/mqsi
+rm -Rf /var/mqsi/*
 
 cd /var/mqsi
 tar zxf ~/ace/archives/var.mqsi.tar.gz
 sudo chown -R herbert:mqbrkrs /var/mqsi
-
-cd /ace
 
 FILES=~/ace/config/*.yaml
 
@@ -17,7 +15,7 @@ do
   s=${f:0:2}
   n="${f%.*}"
   b=~/ace/projects/BARfiles/$n.bar
-  w=/var/mqsi/servers/$n
+  w=/ace/servers/$n
  
   mqsicreateworkdir $w
 

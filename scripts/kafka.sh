@@ -1,6 +1,6 @@
 #/bin/sh
 
-~/ace/scripts/ram.sh /kafka
+rm -Rf /kafka/*
 
 cd /kafka
 

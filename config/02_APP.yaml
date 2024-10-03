@@ -3,7 +3,7 @@ serverConfVersion: 1
 defaultQueueManager: 'APP'
 
 Log:
-  eventLog: '/var/mqsi/servers/02_APP/log/event.txt'
+  eventLog: '/ace/servers/02_APP/log/event.txt'
 
 RestAdminListener:
   port: 7602
