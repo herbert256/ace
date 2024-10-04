@@ -1,65 +1,10 @@
 BROKER SCHEMA events
-CREATE COMPUTE MODULE GetTT
-
-	CREATE FUNCTION Main() RETURNS BOOLEAN
-
-	BEGIN
-
-		SET OutputRoot.Properties.CodedCharSetId = 1208;
-		SET OutputRoot.Properties.Encoding       = 546;
-
-		CREATE LASTCHILD OF OutputRoot DOMAIN('MQMD');
-		CREATE LASTCHILD OF OutputRoot DOMAIN('MQRFH2');
-		CREATE LASTCHILD OF OutputRoot DOMAIN('BLOB');
-		
-		SET OutputRoot.MQMD.CodedCharSetId = 1208;
-		SET OutputRoot.MQMD.Encoding       = 546;
-		SET OutputRoot.MQMD.Format         = MQFMT_RF_HEADER_2;
-		SET OutputRoot.MQMD.SourceQueue    = 'MQTT';
-		
-		SET OutputRoot.MQRFH2.(MQRFH2.Field)Version        = 2;
-		SET OutputRoot.MQRFH2.(MQRFH2.Field)CodedCharSetId = 1208;
-		SET OutputRoot.MQRFH2.(MQRFH2.Field)Encoding       = 546;
-		SET OutputRoot.MQRFH2.(MQRFH2.Field)Format         = MQFMT_STRING;
-		SET OutputRoot.MQRFH2.(MQRFH2.Field)NameValueCCSID = 1208;
-		
-		SET OutputRoot.MQRFH2.psc.Topic = InputLocalEnvironment.MQTT.Input.Topic;
-
-		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
-		
-		RETURN TRUE;
-
-	END;
-
-END MODULE;
 
 CREATE COMPUTE MODULE Events
 	
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	
 	BEGIN
-
-		CALL Raw ();
-							
-		SET Environment.Topic = Topic(InputRoot.MQRFH2.psc.Topic);
-		
-		DECLARE Level1 CHAR SUBSTRING(Environment.Topic BEFORE '/');   
-		DECLARE Rest1  CHAR SUBSTRING(Environment.Topic AFTER '/');   
-		DECLARE Level2 CHAR SUBSTRING(Rest1 BEFORE '/');   
-        
-        SET OutputRoot = InputRoot;
-             
-        IF Level1 = 'StatisticsAccounting' THEN
-        	PROPAGATE TO TERMINAL 'out1';
-        ELSE
-        	RETURN TRUE;
-        END IF;
-         
-		RETURN FALSE;
-
-	END;
-
-	CREATE PROCEDURE Raw () BEGIN
 
 		DECLARE ext   CHAR '.txt';
 		
@@ -71,14 +16,33 @@ CREATE COMPUTE MODULE Events
 		ELSEIF xleft = '{' and xright = '}' THEN
 			SET ext = '.json';
 		END IF;
-				  
-		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/raw/' || TRIM(InputRoot.MQMD.SourceQueue) || '/'  || TRIM(InputRoot.MQRFH2.psc.Topic);
-	  	SET OutputLocalEnvironment.Destination.File.Name      = FileName ()  || ext;
+		  
+		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/raw/' || TRIM(InputRoot.MQRFH2.psc.Topic);
+	  	SET OutputLocalEnvironment.Destination.File.Name      = FileName () || ext;
 	  	
         SET OutputRoot = InputRoot;
              
-        PROPAGATE TO TERMINAL 'out4';
+        PROPAGATE;
+        							
+		SET Environment.Topic = Topic(InputRoot.MQRFH2.psc.Topic);
+    
+        SET OutputRoot = InputRoot;
+             
+        IF CONTAINS (Environment.Topic, 'StatisticsAccounting') THEN
+
+        	PROPAGATE TO TERMINAL 'out1';
+
+        ELSE       
 		
+			SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/' || Environment.Topic;
+		  	SET OutputLocalEnvironment.Destination.File.Name      = FileName()  || ext;
+		  	
+			SET OutputRoot.BLOB = InputRoot.BLOB;
+
+        END IF;
+         
+		RETURN TRUE;
+
 	END;
 
 	CREATE FUNCTION Topic (IN Topic CHAR) RETURNS CHAR BEGIN
@@ -89,10 +53,10 @@ CREATE COMPUTE MODULE Events
 		
 		DECLARE work CHAR TRIM(Topic);
 			
-		SET work = REPLACE(work, 'IBM/IntegrationBus/',              '/');
-		SET work = REPLACE(work, '$SYS/Broker/integration_server/',  '/');
-		SET work = REPLACE(work, '/APP/',                            '/');
-		SET work = REPLACE(work, '/JSON/',                           '/');
+		SET work = REPLACE(work, 'IBM/IntegrationBus' ,             '');
+		SET work = REPLACE(work, '$SYS/Broker/integration_server',  '');
+		SET work = REPLACE(work, '/APP',                            '');
+		SET work = REPLACE(work, '/JSON',                           '');
 
 		SET work = REPLACE(work, '//', '/');
 		
@@ -102,33 +66,6 @@ CREATE COMPUTE MODULE Events
 
 		RETURN work;
 		
-	END;
-
-END MODULE;
-
-CREATE COMPUTE MODULE DefaultX
-	
-	CREATE FUNCTION Main() RETURNS BOOLEAN
-	BEGIN
-		
-		DECLARE ext   CHAR '.txt';
-		
-		DECLARE xleft  CHAR CAST(LEFT(InputRoot.BLOB.BLOB,  1) AS CHAR CCSID 1208);
-		DECLARE xright CHAR CAST(RIGHT(InputRoot.BLOB.BLOB, 1) AS CHAR CCSID 1208);
-		
-		IF xleft = '<' and xright = '>' THEN
-			SET ext = '.xml';
-		ELSEIF xleft = '{' and xright = '}' THEN
-			SET ext = '.json';
-		END IF;
-		
-		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/' || Environment.Topic;
-	  	SET OutputLocalEnvironment.Destination.File.Name      = FileName()  || ext;
-	  	
-		SET OutputRoot.BLOB = InputRoot.BLOB;
-
-		RETURN TRUE;
-
 	END;
 
 END MODULE;

@@ -17,7 +17,6 @@ strmqm APP
 /opt/mqsi/server/sample/wmq/iib_createqueues.sh APP   herbert
 
 ~/ace/scripts/mqtt.sh APP   1883
-~/ace/scripts/mqtt.sh ADMIN 1884
 
 echo "DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)" | runmqsc APP
 echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAUSER('herbert')" | runmqsc APP
@@ -29,14 +28,9 @@ echo "SET CHLAUTH(SYSTEM.ADMIN.SVRCONN) TYPE(ADDRESSMAP) ADDRESS(127.0.0.1) MCAU
 echo "ALTER QMGR CONNAUTH('')" | runmqsc ADMIN
 echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc ADMIN
 
-echo "DEFINE QLOCAL(PUBSUB_ADMIN)" | runmqsc ADMIN
-echo "DEFINE QLOCAL(PUBSUB_APP)"   | runmqsc APP
+echo "DEFINE QLOCAL(EVENTS)"   | runmqsc APP
 
-echo "DEFINE SUB(ALL) TOPICSTR('#') PSPROP (RFH2) DEST(PUBSUB_ADMIN)"  | runmqsc ADMIN
-echo "DEFINE SUB(ALL) TOPICSTR('#') PSPROP (RFH2) DEST(PUBSUB_APP)"    | runmqsc APP
-
-echo "DEFINE QLOCAL(APP_FAIL)"        | runmqsc ADMIN
-echo "DEFINE QLOCAL(APP_DEAD)"        | runmqsc ADMIN
+echo "DEFINE SUB(ALL) TOPICSTR('#') PSPROP (RFH2) DEST(EVENTS)"    | runmqsc APP
 
 echo "DEFINE QLOCAL(DEAD)"            | runmqsc ADMIN
 echo "DEFINE QLOCAL(DEAD)"            | runmqsc APP
@@ -44,14 +38,16 @@ echo "DEFINE QLOCAL(DEAD)"            | runmqsc APP
 echo "DEFINE QLOCAL(FAIL)"            | runmqsc ADMIN
 echo "DEFINE QLOCAL(FAIL)"            | runmqsc APP
 
-echo "DEFINE QLOCAL(TST_GOED_IN)"      | runmqsc ADMIN
-echo "DEFINE QLOCAL(TST_GOED_OUT)"     | runmqsc ADMIN
-echo "DEFINE QLOCAL(TST_FOUT)"         | runmqsc ADMIN
+echo "DEFINE QLOCAL(TROUBLES)"            | runmqsc ADMIN
+
+echo "DEFINE QLOCAL(TST_OK_IN)"      | runmqsc ADMIN
+echo "DEFINE QLOCAL(TST_OK_OUT)"     | runmqsc ADMIN
+echo "DEFINE QLOCAL(TST_ERROR)"         | runmqsc ADMIN
 
 
-echo "DEFINE QLOCAL(TST_GOED_IN)"      | runmqsc APP
-echo "DEFINE QLOCAL(TST_GOED_OUT)"     | runmqsc APP
-echo "DEFINE QLOCAL(TST_FOUT)"         | runmqsc APP
+echo "DEFINE QLOCAL(TST_OK_IN)"      | runmqsc APP
+echo "DEFINE QLOCAL(TST_OK_OUT)"     | runmqsc APP
+echo "DEFINE QLOCAL(TST_ERROR)"         | runmqsc APP
 
 echo "DEFINE QLOCAL(HELLO_CORR)"          | runmqsc APP
 echo "DEFINE QLOCAL(HELLO)"               | runmqsc APP

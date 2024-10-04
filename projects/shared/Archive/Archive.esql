@@ -44,9 +44,9 @@ CREATE COMPUTE MODULE Archive
 		CALL Info         (Event);
 		CALL Event        (Event);
 		 
-		IF LEFT(action, 5) = 'catch' or left(action, 7) = 'failure' THEN
-			CALL Mail (Event, InputExceptionList);
-		END IF;
+		--IF LEFT(action, 5) = 'catch' or left(action, 7) = 'failure' THEN
+		--	CALL Mail (Event, InputExceptionList);
+		--END IF;
 		
 		RETURN TRUE;
 		

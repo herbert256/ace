@@ -6,7 +6,7 @@ RestAdminListener:
   port: 7601
 
 Log:
-  consoleLog: true           # Control writing BIP messages to standard out. Set to true or false, default is true.
+  consoleLog: false           # Control writing BIP messages to standard out. Set to true or false, default is true.
   outputFormat: 'idText'     # Control the format of BIP messages written to standard out and file. Set to idText, text or ibmjson, default is text if unset.
   eventLog: '/ace/servers/01_adapters/events/events.txt' 
 

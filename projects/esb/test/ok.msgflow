@@ -2,14 +2,14 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Input_MQ.subflow="Input/MQ.subflow" xmlns:Output_MQ.subflow="Output/MQ.subflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="test/ok.msgflow" nsPrefix="test_ok.msgflow">
   <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
     <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
-    <translation xmi:type="utility:TranslatableString" key="ok" bundleName="test/ok" pluginId="App"/>
-    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/App/icons/full/obj16/ok.gif"/>
-    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/App/icons/full/obj30/ok.gif"/>
+    <translation xmi:type="utility:TranslatableString" key="ok" bundleName="test/ok" pluginId="esb"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/esb/icons/full/obj16/ok.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/esb/icons/full/obj30/ok.gif"/>
     <composition>
-      <nodes xmi:type="Input_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_1" location="40,30" queueName="TST_GOED_IN">
+      <nodes xmi:type="Input_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_1" location="40,30" queueName="TST_OK_IN">
         <translation xmi:type="utility:ConstantString" string="mq/tst_goed_in"/>
       </nodes>
-      <nodes xmi:type="Output_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="166,30" queueName="TST_GOED_OUT">
+      <nodes xmi:type="Output_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="166,30" queueName="TST_OK_OUT">
         <translation xmi:type="utility:ConstantString" string="mq/tst_goed_out"/>
       </nodes>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>

@@ -6,7 +6,7 @@ RestAdminListener:
   port: 7602
 
 Log:
-  consoleLog: true          
+  consoleLog: false         
   outputFormat: 'idText'  
   eventLog: '/ace/servers/02_esb/events/events.txt' 
 

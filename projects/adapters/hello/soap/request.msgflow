@@ -6,7 +6,7 @@
     <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/adapters/icons/full/obj16/request.gif"/>
     <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/adapters/icons/full/obj30/request.gif"/>
     <composition>
-      <nodes xmi:type="ComIbmSOAPInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="32,63" wsdlFileName="hello.wsdl" selectedPortType="servicePortType" selectedBinding="serviceBinding" selectedPort="servicePort" targetNamespace="http://www.example.com/service" useHTTPTransport="true" urlSelector="/service" sendProcessingFaultsToFailure="true" messageSetProperty="{hello}" validateTiming="complete" parserXmlnscBuildTreeUsingXMLSchema="false" validateMaster="none">
+      <nodes xmi:type="ComIbmSOAPInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="32,63" wsdlFileName="hello.wsdl" selectedPortType="servicePortType" selectedBinding="serviceBinding" selectedPort="servicePort" targetNamespace="http://www.example.com/service" useHTTPTransport="true" urlSelector="/soapService" sendProcessingFaultsToFailure="true" messageSetProperty="{hello}" validateTiming="complete" parserXmlnscBuildTreeUsingXMLSchema="false" validateMaster="none">
         <translation xmi:type="utility:ConstantString" string="SOAP Input"/>
       </nodes>
       <nodes xmi:type="hello_service_request.subflow:FCMComposite_1" xmi:id="FCMComposite_1_7" location="312,64">

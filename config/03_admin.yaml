@@ -2,6 +2,11 @@ serverConfVersion: 1
 
 defaultQueueManager: 'ADMIN'
 
+Log:
+  consoleLog: false         
+  outputFormat: 'idText'  
+  eventLog: '/ace/servers/03_admin/events/events.txt' 
+
 Statistics:
   Snapshot:
     publicationOn: 'inactive'  

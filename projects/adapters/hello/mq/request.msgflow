@@ -2,14 +2,14 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:Input_MQ.subflow="Input/MQ.subflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:hello_service_request.subflow="hello/service/request.subflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="hello/mq/request.msgflow" nsPrefix="hello_mq_request.msgflow">
   <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" nodeLayoutStyle="RECTANGLE">
     <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
-    <translation xmi:type="utility:TranslatableString" key="request" bundleName="hello/mq/request" pluginId="App"/>
-    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/App/icons/full/obj16/request.gif"/>
-    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/App/icons/full/obj30/request.gif"/>
+    <translation xmi:type="utility:TranslatableString" key="request" bundleName="hello/mq/request" pluginId="adapters"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/adapters/icons/full/obj16/request.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/adapters/icons/full/obj30/request.gif"/>
     <composition>
       <nodes xmi:type="hello_service_request.subflow:FCMComposite_1" xmi:id="FCMComposite_1_1" location="499,44">
         <translation xmi:type="utility:ConstantString" string="Request"/>
       </nodes>
-      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="259,44" computeExpression="esql://routine/hello.mq#MqRequest.Main">
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="259,44" computeExpression="esql://routine/hello.mq#MqRequest.Main" computeMode="destinationAndMessage">
         <translation xmi:type="utility:ConstantString" string="Compute"/>
       </nodes>
       <nodes xmi:type="Input_MQ.subflow:FCMComposite_1" xmi:id="FCMComposite_1_4" location="23,44" queueName="HELLO_MQ_IN">
