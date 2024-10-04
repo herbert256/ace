@@ -7,8 +7,8 @@ tar zxf ~/ace/archives/var.mqm.tar.gz
 sudo chown -R mqm:mqm /var/mqm
 sudo chown -R mqttUser:mqm /var/mqm/mqttUser
 
-crtmqm -c "ACE - Administration" -lc    -p 1415 -u ADMIN_DEAD ADMIN
-crtmqm -c "ACE - Applications"   -lc -q -p 1414 -u APP_DEAD   APP
+crtmqm -c "ACE - Administration" -lc    -p 1415 -u DEAD ADMIN
+crtmqm -c "ACE - Applications"   -lc -q -p 1414 -u DEAD   APP
 
 strmqm ADMIN
 strmqm APP
@@ -32,32 +32,26 @@ echo "REFRESH SECURITY TYPE(CONNAUTH)" | runmqsc ADMIN
 echo "DEFINE QLOCAL(PUBSUB_ADMIN)" | runmqsc ADMIN
 echo "DEFINE QLOCAL(PUBSUB_APP)"   | runmqsc APP
 
-echo "DEFINE QLOCAL(TT_ADMIN)" | runmqsc ADMIN
-echo "DEFINE QLOCAL(TT_APP)"   | runmqsc ADMIN
-
 echo "DEFINE SUB(ALL) TOPICSTR('#') PSPROP (RFH2) DEST(PUBSUB_ADMIN)"  | runmqsc ADMIN
 echo "DEFINE SUB(ALL) TOPICSTR('#') PSPROP (RFH2) DEST(PUBSUB_APP)"    | runmqsc APP
 
 echo "DEFINE QLOCAL(APP_FAIL)"        | runmqsc ADMIN
 echo "DEFINE QLOCAL(APP_DEAD)"        | runmqsc ADMIN
 
-echo "DEFINE QLOCAL(ADMIN_FAIL)"      | runmqsc ADMIN
-echo "DEFINE QLOCAL(ADMIN_DEAD)"      | runmqsc ADMIN
-echo "DEFINE QLOCAL(ADMIN_TROUBLES)"  | runmqsc ADMIN
+echo "DEFINE QLOCAL(DEAD)"            | runmqsc ADMIN
+echo "DEFINE QLOCAL(DEAD)"            | runmqsc APP
+
+echo "DEFINE QLOCAL(FAIL)"            | runmqsc ADMIN
+echo "DEFINE QLOCAL(FAIL)"            | runmqsc APP
 
 echo "DEFINE QLOCAL(TST_GOED_IN)"      | runmqsc ADMIN
 echo "DEFINE QLOCAL(TST_GOED_OUT)"     | runmqsc ADMIN
-echo "DEFINE QLOCAL(TST_FOUT_CATCH)"   | runmqsc ADMIN
-echo "DEFINE QLOCAL(TST_FOUT_FAILURE)" | runmqsc ADMIN
+echo "DEFINE QLOCAL(TST_FOUT)"         | runmqsc ADMIN
 
-echo "DEFINE QLOCAL(ADMIN_DEAD)"       | runmqsc ADMIN
 
 echo "DEFINE QLOCAL(TST_GOED_IN)"      | runmqsc APP
 echo "DEFINE QLOCAL(TST_GOED_OUT)"     | runmqsc APP
-echo "DEFINE QLOCAL(TST_FOUT_CATCH)"   | runmqsc APP
-echo "DEFINE QLOCAL(TST_FOUT_FAILURE)" | runmqsc APP
-
-echo "DEFINE QLOCAL (APP_DEAD)  "      | runmqsc APP
+echo "DEFINE QLOCAL(TST_FOUT)"         | runmqsc APP
 
 echo "DEFINE QLOCAL(HELLO_CORR)"          | runmqsc APP
 echo "DEFINE QLOCAL(HELLO)"               | runmqsc APP

@@ -1,0 +1,63 @@
+BROKER SCHEMA admin
+
+
+CREATE COMPUTE MODULE Queues
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN 
+ 
+		DECLARE Dir  CHAR Shared.RootDir() || 'queues/' || InputRoot.MQMD.SourceQueue;
+		DECLARE File CHAR Shared.FileName();
+		
+		CALL Body    (Dir, File);		
+		CALL Headers (Dir, File);		
+		
+		RETURN FALSE;
+
+	END;
+		
+	CREATE PROCEDURE Body (IN Dir CHAR, IN File CHAR) BEGIN
+			
+		DECLARE encoding CHAR ;
+
+		SET OutputRoot.Properties.CodedCharSetId = InputRoot.MQMD.CodedCharSetId;
+		SET OutputRoot.Properties.Encoding 		 = InputRoot.MQMD.Encoding;
+			
+		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
+	
+		SET Environment.Shared.Directory = Dir;
+		SET Environment.Shared.File	  = File  
+										 || '_' 
+										 || CAST(InputRoot.MQMD.CodedCharSetId AS CHAR) 
+										 || '_' 
+										 || CAST(InputRoot.MQMD.Encoding AS CHAR)
+										 || '_body.bin';
+		
+		PROPAGATE;
+
+	END;
+
+
+	CREATE PROCEDURE Headers (IN Dir CHAR, IN File CHAR) BEGIN
+			
+		SET OutputRoot.Properties.CodedCharSetId = 1208;
+		SET OutputRoot.Properties.Encoding 		 = 546;
+
+		CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') NAME('XMLNSC');
+
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.XMLNSC.{InputRoot.MQMD.SourceQueue}.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+
+		SET Environment.Shared.Directory = Dir;
+		SET Environment.Shared.File	  = File || '_headers.xml';
+		
+		PROPAGATE;
+
+	END;
+	
+END MODULE;

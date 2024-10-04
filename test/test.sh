@@ -1,6 +1,5 @@
 #/bin/sh
 
-nohup ~/ace/test/admin.sh       < /dev/null > /ace/log/test/admin.txt  2>&1 &
 nohup ~/ace/test/goed.sh        < /dev/null > /ace/log/test/goed.txt   2>&1 &
 nohup ~/ace/test/fout.sh        < /dev/null > /ace/log/test/fout.txt   2>&1 &
 nohup ~/ace/test/pubsub.sh      < /dev/null > /ace/log/test/pubsub.txt 2>&1 &

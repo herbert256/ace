@@ -1,0 +1,22 @@
+serverConfVersion: 1
+
+defaultQueueManager: 'ADMIN'
+
+Statistics:
+  Snapshot:
+    publicationOn: 'inactive'  
+  Archive:
+    archivalOn: 'inactive' 
+  Resource:
+    reportingOn: false
+
+Monitoring:
+  MessageFlow:
+    publicationOn: 'inactive'
+
+RestAdminListener:
+  port: 7603
+
+ResourceManagers:
+  JVM:
+    jvmDebugPort: 7903      
