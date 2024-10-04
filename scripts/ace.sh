@@ -14,7 +14,7 @@ do
   f=$(basename $p)  
   s=${f:0:2}
   n="${f%.*}"
-  b=~/ace/projects/BARfiles/$n.bar
+  b=~/ace/projects/bars/$n.bar
   w=/ace/servers/$n
  
   mqsicreateworkdir $w
