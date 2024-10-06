@@ -14,7 +14,7 @@ CREATE COMPUTE MODULE File
 		END IF;
  		
 		IF Environment.Shared.File = '' THEN
-			SET Environment.Shared.File = Shared.FileName() || Shared.MsgID(NULL) || '.txt';
+			SET Environment.Shared.File = Shared.FileName() || '.txt';
 		END IF;
 
 		SET OutputRoot.Properties.CodedCharSetId = InputRoot.Properties.CodedCharSetId;

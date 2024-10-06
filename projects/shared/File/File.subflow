@@ -5,14 +5,14 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Check" name="Check" defaultValueLiteral="Catch">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <translation xmi:type="utility:TranslatableString" key="File" bundleName="File/File" pluginId="Shared"/>
-    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Shared/icons/full/obj16/File.gif"/>
-    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Shared/icons/full/obj30/File.gif"/>
+    <translation xmi:type="utility:TranslatableString" key="File" bundleName="File/File" pluginId="shared"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/shared/icons/full/obj16/File.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/shared/icons/full/obj30/File.gif"/>
     <composition>
       <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="47,53">
-        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="File/File" pluginId="Shared"/>
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="File/File" pluginId="shared"/>
       </nodes>
-      <nodes xmi:type="ComIbmFileOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="388,58" outputDirectory="/tmp/ace/is_set_in_the_previous_compute_node" outputFilename="is_set_in_the_previous_compute_node.txt" writeMode="writeInPlace" outputMode="archiveAndReplaceWithTimestamp" replaceDuplicateArchives="true" validateMaster="none">
+      <nodes xmi:type="ComIbmFileOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="417,54" outputDirectory="/tmp/ace/is_set_in_the_previous_compute_node" outputFilename="is_set_in_the_previous_compute_node.txt" writeMode="writeInPlace" outputMode="archiveAndReplaceWithTimestamp" replaceDuplicateArchives="true" validateMaster="none">
         <translation xmi:type="utility:ConstantString" string="File Output"/>
       </nodes>
       <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="335,52" computeExpression="esql://routine/File#File.Main" computeMode="destinationAndMessage">
@@ -21,8 +21,8 @@
       <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="119,53">
         <translation xmi:type="utility:ConstantString" string="Flow Order"/>
       </nodes>
-      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="189,141">
-        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="File/File" pluginId="Shared"/>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="183,139">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="File/File" pluginId="shared"/>
       </nodes>
       <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="200,54" computeExpression="esql://routine/File#CopyX.Main">
         <translation xmi:type="utility:ConstantString" string="Copy"/>
@@ -40,7 +40,7 @@
     </composition>
     <propertyOrganizer>
       <propertyDescriptor groupName="Group.Basic" configurable="true" userDefined="true" describedAttribute="Property.Check">
-        <propertyName xmi:type="utility:TranslatableString" key="Property.Check" bundleName="File/File" pluginId="Shared"/>
+        <propertyName xmi:type="utility:TranslatableString" key="Property.Check" bundleName="File/File" pluginId="shared"/>
       </propertyDescriptor>
     </propertyOrganizer>
     <stickyBoard/>

@@ -23,10 +23,11 @@ ACE data: /var/mqsi/
 Software verzamelen
 -------------------
 
-ACE: 13.0.1.0-ACE-LINUX64-EVALUATION.tar.gz
-MQ:  9.4.0.0-IBM-MQ-Advanced-for-Developers-UbuntuLinuxX64.tar.gz
-DB2: v11.5.9_linuxx64_server_dec.tar.gz
+ACE:     13.0.1.0-ACE-LINUX64-EVALUATION.tar.gz
+MQ:      9.4.0.0-IBM-MQ-Advanced-for-Developers-UbuntuLinuxX64.tar.gz
+DB2:     v11.5.9_linuxx64_server_dec.tar.gz
 Eclipse: eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
+Studio:  ibm_ds4140_lin.tar.gz 
 
 --------------
 Naar root gaan
@@ -174,22 +175,17 @@ Optioneeel, datastudio installatie
 
 https://www.ibm.com/us-en/marketplace/ibm-data-studio
 
-cd /tmp
 rm -rf /tmp/work
 mkdir /tmp/work
 cd /tmp/work
 
-tar zxf ~herbert/Downloads/ibm_ds4130_lin.tar.gz
+tar zxf ~herbert/Downloads/ibm_ds4140_lin.tar.gz 
 
 ./imLauncherLinux.sh
 
 - Als locatie voor "Installation manager" voor "/opt/sdp/manager" gekozen.
 - Als locatie voor "Shared" voor               "/opt/sdp/shared" gekozen.
 - Als locatie voor "IBM Data Studio" voor      "/opt/sdp/datastudio" gekozen.
-
-cd /tmp
-rm -rf /tmp/work
-rm ~herbert/Downloads/ibm_ds4130_lin.tar.gz
 
 
 ------

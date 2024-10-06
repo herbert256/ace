@@ -1,0 +1,17 @@
+BROKER SCHEMA events
+
+CREATE COMPUTE MODULE XML
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot = InputRoot;
+		
+		CALL Shared.ClearEmptyFields (OutputRoot.XMLNSC);
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

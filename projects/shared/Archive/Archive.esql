@@ -12,16 +12,15 @@ CREATE COMPUTE MODULE Archive
 		DECLARE CONTINUE HANDLER FOR SQLSTATE LIKE '%' BEGIN END;
 
 		IF NOT EXISTS(Environment.Archive[]) THEN
-			SET	Environment.Archive.id		= UUIDASCHAR;
-			SET Environment.Archive.start	= CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd.HHmmss.SSSSSS');
-			SET Environment.Archive.seq		= 0;
+			SET	Environment.Archive.id	= Shared.FileName();
+			SET Environment.Archive.seq = 0;
 		END IF;
 
 		IF RIGHT(action, 5) <> 'after' THEN 	
 			SET Environment.Archive.seq	= Environment.Archive.seq + 1;
 		END IF;
 
-		SET	Environment.Archive.dir  = Shared.ArchiveDir() || MessageFlowLabel || '/' || Environment.Archive.start || '/' || CAST(Environment.Archive.seq as CHAR CCSID 1208) || '_' || type || '_' || action ;		
+		SET	Environment.Archive.dir = Shared.ArchiveDir() || MessageFlowLabel || '/' || Environment.Archive.id || '/' || CAST(Environment.Archive.seq as CHAR CCSID 1208) || '_' || type || '_' || action ;		
 				
 		DECLARE Event REFERENCE TO Environment;		
 		CREATE LASTCHILD OF Environment.Archive.Events AS Event NAME 'Event';

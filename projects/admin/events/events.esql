@@ -5,147 +5,43 @@ CREATE COMPUTE MODULE Events
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	
 	BEGIN
-
-		DECLARE ext   CHAR '.txt';
-		
+		 
 		DECLARE xleft  CHAR CAST(LEFT(InputRoot.BLOB.BLOB,  1) AS CHAR CCSID 1208);
 		DECLARE xright CHAR CAST(RIGHT(InputRoot.BLOB.BLOB, 1) AS CHAR CCSID 1208);
 		
-		IF xleft = '<' and xright = '>' THEN
-			SET ext = '.xml';
-		ELSEIF xleft = '{' and xright = '}' THEN
-			SET ext = '.json';
+		IF     xleft = '<' and xright = '>' THEN SET Environment.ext = '.xml';
+		ELSEIF xleft = '{' and xright = '}' THEN SET Environment.ext = '.json';
+		ELSE		                             SET Environment.ext = '.txt';			
 		END IF;
+		
+		SET Environment.fileName = Shared.FileName () || Environment.ext;
 		  
-		SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/raw/' || TRIM(InputRoot.MQRFH2.psc.Topic);
-	  	SET OutputLocalEnvironment.Destination.File.Name      = FileName () || ext;
+		SET Environment.Shared.Directory = '/ace/data/raw/' || Environment.BaseTopic;
+	  	SET Environment.Shared.File      = Environment.fileName;
 	  	
         SET OutputRoot = InputRoot;
              
-        PROPAGATE;
-        							
-		SET Environment.Topic = Topic(InputRoot.MQRFH2.psc.Topic);
+        PROPAGATE TO TERMINAL 'out4';
+        								
+		SET Environment.Shared.Directory = '/ace/data/' || Environment.Topic;
+		SET Environment.Shared.File      = Environment.fileName;
     
         SET OutputRoot = InputRoot;
              
-        IF CONTAINS (Environment.Topic, 'StatisticsAccounting') THEN
-
-        	PROPAGATE TO TERMINAL 'out1';
-
-        ELSE       
-		
-			SET OutputLocalEnvironment.Destination.File.Directory = '/ace/data/' || Environment.Topic;
-		  	SET OutputLocalEnvironment.Destination.File.Name      = FileName()  || ext;
-		  	
-			SET OutputRoot.BLOB = InputRoot.BLOB;
-
+        IF     CONTAINS (Environment.Topic, 'StatisticsAccounting') THEN PROPAGATE TO TERMINAL 'out1';
+        ELSEIF Environment.ext = '.xml'                             THEN PROPAGATE TO TERMINAL 'out2';
+        ELSEIF Environment.ext = '.json'                            THEN PROPAGATE TO TERMINAL 'out3';
+        ELSE                                                             PROPAGATE TO TERMINAL 'out4';
         END IF;
          
-		RETURN TRUE;
+		RETURN FALSE;
 
 	END;
 
 	CREATE FUNCTION Topic (IN Topic CHAR) RETURNS CHAR BEGIN
 		 
-		IF COALESCE(Topic, '' ) = '' THEN
-			RETURN ' NoTopicFound';
-		END IF;
-		
-		DECLARE work CHAR TRIM(Topic);
-			
-		SET work = REPLACE(work, 'IBM/IntegrationBus' ,             '');
-		SET work = REPLACE(work, '$SYS/Broker/integration_server',  '');
-		SET work = REPLACE(work, '/APP',                            '');
-		SET work = REPLACE(work, '/JSON',                           '');
 
-		SET work = REPLACE(work, '//', '/');
-		
-		IF SUBSTRING(work FROM 1 FOR 1) = '/' THEN
-			SET work = SUBSTRING(work FROM 2); 
-		END IF;
-
-		RETURN work;
 		
 	END;
 
 END MODULE;
-
-
-CREATE COMPUTE MODULE Stats
-
-	CREATE FUNCTION Main() RETURNS BOOLEAN
-
-	BEGIN
-
-		DECLARE input REFERENCE TO InputRoot.XMLNSC.WMQIStatisticsAccounting;
-		DECLARE flow  REFERENCE TO input.MessageFlow;
-
-		IF flow.TotalInputMessages = '0' THEN
-			RETURN FALSE;
-		END IF;
-
-		DECLARE output, output2 REFERENCE TO OutputRoot;
-				
-		CREATE LASTCHILD OF output AS output DOMAIN('XMLNSC') NAME('XMLNSC');
-		CREATE LASTCHILD OF output AS output NAME('stats'); 
-
-		SET output.counts.(XMLNSC.Attribute)messages    = flow.TotalInputMessages;
-		SET output.counts.(XMLNSC.Attribute)errors      = flow.TotalNumberOfMessagesWithErrors;
-		SET output.counts.(XMLNSC.Attribute)commits     = flow.TotalNumberOfCommits;
-		SET output.counts.(XMLNSC.Attribute)backouts    = flow.TotalNumberOfBackouts;
-		
-		SET output.wait.(XMLNSC.Attribute)elapsed   	= flow.ElapsedTimeWaitingForInputMessage;
-		SET output.wait.(XMLNSC.Attribute)cpu       	= flow.CPUTimeWaitingForInputMessage;
-
-		SET output.elapsed.(XMLNSC.Attribute)total   	= flow.TotalElapsedTime;
-		SET output.elapsed.(XMLNSC.Attribute)min       	= flow.MinimumElapsedTime;
-		SET output.elapsed.(XMLNSC.Attribute)max       	= flow.MaximumElapsedTime;
-		
-		SET output.cpu.(XMLNSC.Attribute)total          = flow.TotalCPUTime;
-		SET output.cpu.(XMLNSC.Attribute)min        	= flow.MaximumCPUTime;
-		SET output.cpu.(XMLNSC.Attribute)max        	= flow.MinimumCPUTime;
-		
-		SET output.size.(XMLNSC.Attribute)total     	= flow.TotalSizeOfInputMessages;
-		SET output.size.(XMLNSC.Attribute)min       	= flow.MinimumSizeOfInputMessages;
-		SET output.size.(XMLNSC.Attribute)max       	= flow.MaximumSizeOfInputMessages;
-		
-		CREATE LASTCHILD OF output AS output NAME('nodes');
-		
-		FOR node AS input.Nodes.NodeStatistics[] DO
-			IF node.CountOfInvocations <> '0' THEN
-				
-				CREATE LASTCHILD OF output AS output2 NAME('node');
-
-				SET output2.(XMLNSC.Attribute)name	= REPLACE(REPLACE(node.Label, '#OutTerminal', ''), '#InTerminal', '');		
-				SET output2.(XMLNSC.Attribute)count	= node.CountOfInvocations;
-
-				SET output2.elapsed.(XMLNSC.Attribute)total	= node.TotalElapsedTime;
-				SET output2.elapsed.(XMLNSC.Attribute)min	= node.MinimumElapsedTime;
-				SET output2.elapsed.(XMLNSC.Attribute)max	= node.MaximumElapsedTime;
-		
-				SET output2.cpu.(XMLNSC.Attribute)total		= node.TotalCPUTime;
-				SET output2.cpu.(XMLNSC.Attribute)min		= node.MaximumCPUTime;
-				SET output2.cpu.(XMLNSC.Attribute)max		= node.MinimumCPUTime;
-
-			END IF;
-
-		END FOR;
-								
-		SET OutputLocalEnvironment.Destination.File.Directory	= '/ace/data/stats/'
-																|| '/' || COALESCE(flow.ApplicationName, 'xxx')
-																|| '/' || COALESCE(flow.MessageFlowName, 'xxx')
-																|| '/' || COALESCE(input.RecordType, 'xxx')
-																|| '/' || COALESCE(input.RecordCode, 'xxx');
-		
-		SET OutputLocalEnvironment.Destination.File.Name = CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd_HHmmss_SSSSSS') || '.xml'; 
-	
-		RETURN TRUE;
-
-	END;
-
-END MODULE;
-
-
-CREATE FUNCTION FileName () RETURNS CHAR BEGIN
-	RETURN	CAST(CURRENT_TIMESTAMP AS CHAR FORMAT 'yyyyMMdd_HHmmss_SSSSSS_') || CAST(FLOOR(RAND() * 999999) as CHAR FORMAT '000000');
-END;
