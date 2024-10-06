@@ -3,6 +3,7 @@ DB2 11.5.9.0, MQ 9.4.0.0, ACE 13.0.1.0 Installatie op Linux
 ===========================================================
 
 Mijn linux user-id is 'herbert', doe nu een zoek/vervang van 'herbert' door je eigen user-id in dit document.
+Mijn linux wachtwoord is 'test123', doe nu een zoek/vervang van 'test123' door je eigen wachtwoord in dit document.
 
 
 ---------------------------------
@@ -23,11 +24,11 @@ ACE data: /var/mqsi/
 Software verzamelen
 -------------------
 
-ACE:     13.0.1.0-ACE-LINUX64-EVALUATION.tar.gz
-MQ:      9.4.0.0-IBM-MQ-Advanced-for-Developers-UbuntuLinuxX64.tar.gz
-DB2:     v11.5.9_linuxx64_server_dec.tar.gz
+ACE: 13.0.1.0-ACE-LINUX64-EVALUATION.tar.gz
+MQ:  9.4.0.0-IBM-MQ-Advanced-for-Developers-UbuntuLinuxX64.tar.gz
+DB2: v11.5.9_linuxx64_server_dec.tar.gz
 Eclipse: eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
-Studio:  ibm_ds4140_lin.tar.gz 
+Studio: ibm_ds4140_lin.tar.gz
 
 --------------
 Naar root gaan
@@ -72,7 +73,7 @@ Note: ACE heeft geen eigen user ( wel een eigen group: mqbrkrs )
 DB2 installatie
 ---------------
 
-apt-get -y install libaio1
+apt-get -y install libaio1t64
 
 rm -rf /tmp/work
 mkdir /tmp/work
@@ -104,13 +105,17 @@ Onderstaande zijn de uitzonderingen op de defaults
 Probleem: Deze DB2 installatie kent Ubuntu 24.04 nog niet, gefixt met onderstaande
 
 cd /opt/db2/lib64
-sudo ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-core.so libaws-cpp-sdk-core.so
-sudo ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-kinesis.so libaws-cpp-sdk-kinesis.so
-sudo ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-s3.so libaws-cpp-sdk-s3.so
-sudo ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-transfer.so libaws-cpp-sdk-transfer.so
+
+ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-core.so libaws-cpp-sdk-core.so
+ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-kinesis.so libaws-cpp-sdk-kinesis.so
+ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-s3.so libaws-cpp-sdk-s3.so
+ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-transfer.so libaws-cpp-sdk-transfer.so
 
 cd /usr/lib/x86_64-linux-gnu/
-ln -s libaio.so libaio.so.1
+
+ln -s libaio.so libaio.so.1               ( Linux Mint 22 )
+ln -s ln -s libaio.so.1t64 libaio.so.1    ( Ubuntu 2024.04 )
+
 
 
 --------------
@@ -136,10 +141,15 @@ mkdir -p /var/mqm/mqttUser
 useradd mqttUser -p mqm -g mqm -d /var/mqm/mqttUser
 chown -R mqttUser:mqm /var/mqm/mqttUser
 
+
+
+------
+Eclipse
+-------
+
 cd /opt
 tar xzf /home/herbert/Downloads/eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
 chown -R herbert:herbert eclipse
-https://marketplace.eclipse.org/content/ibm-mq-explorer-version-94/help
 
 
 
@@ -179,11 +189,16 @@ rm -rf /tmp/work
 mkdir /tmp/work
 cd /tmp/work
 
-tar zxf ~herbert/Downloads/ibm_ds4140_lin.tar.gz 
+tar zxf ~herbert/Downloads/ibm_ds4140_lin.tar.gz
 
-./imLauncherLinux.sh
+unzip agent.installer.linux.gtk.x86_64_1.9.1006.20210614_1906.zip
+
+./install
 
 - Als locatie voor "Installation manager" voor "/opt/sdp/manager" gekozen.
+
+File / Preferences / Add Repository 
+
 - Als locatie voor "Shared" voor               "/opt/sdp/shared" gekozen.
 - Als locatie voor "IBM Data Studio" voor      "/opt/sdp/datastudio" gekozen.
 
@@ -194,39 +209,42 @@ reboot
 
 reboot
 
-( vaag dat die reboot nodig is, dit snap ik niet helemaal, maar het loste wat problemen op )
 
-
-============================
-Test setup van DB2, MQ & ACE
-============================
-
-
+===========================================================================
 LET OP: De commando's vanaf nu met je eigen user uitvoeren en niet met root
+===========================================================================
 
 
-----------------------------------
-db2/mq/ace omgevingen script maken
-----------------------------------
+--------------------------
+Add MQ explorer to Exlipse
+--------------------------
 
-mkdir -p ~/scripts
+start eclipse with /opt/eclipse/eclipse
 
-echo 'export ODBCINI=/var/mqsi/odbc/odbc.ini'   >  ~/scripts/settings
-echo 'export ODBCSYSINI=/var/mqsi/odbc'         >> ~/scripts/settings
-echo ''                                         >> ~/scripts/settings
-echo '. /var/db2/sqllib/db2profile'             >> ~/scripts/settings
-echo '. /opt/mqm/bin/setmqenv -n Installation1' >> ~/scripts/settings
-echo '. /opt/mqsi/server/bin/mqsiprofile'       >> ~/scripts/settings
+Voeg nieuwe software toe via onderstaande 2 repositories:
+
+https://dbeaver.io/update/latest/
+https://public.dhe.ibm.com/software/integration/wmq/explorer/v9/updates/
+
+
+-----------------------------------
+db2/mq/ace omgevingen altijd actief
+-----------------------------------
+
+echo ''                                         >> ~/.bashrc
+echo 'export ODBCINI=/var/mqsi/odbc/odbc.ini'   >> ~/.bashrc
+echo 'export ODBCSYSINI=/var/mqsi/odbc'         >> ~/.bashrc
+echo ''                                         >> ~/.bashrc
+echo '. /var/db2/sqllib/db2profile'             >> ~/.bashrc
+echo '. /opt/mqm/bin/setmqenv -n Installation1' >> ~/.bashrc
+echo '. /opt/mqsi/server/bin/mqsiprofile'       >> ~/.bashrc
 
 
 -----------------------
 Omgevingen actief maken
 -----------------------
 
-. ~/scripts/settings
-
-(sourcen en niet aanroepen, regel begint met 'punt spatie' )
-
+terminal sluiten en weer openen
 
 
 ---------
@@ -288,27 +306,22 @@ mkdir /var/mqsi/logs
 mkdir /var/mqsi/servers
 
 mqsicreateworkdir /var/mqsi/servers/server
-mqsisetdbparms -w /var/mqsi/servers/server -n DB -u herbert -p ww
+mqsisetdbparms -w /var/mqsi/servers/server -n DB -u herbert -p test123
 
 nohup IntegrationServer --name server \
       --work-dir /var/mqsi/servers/server \
       --mq-queue-manager-name QM \
       > /var/mqsi/logs/server.log 2>&1 &
 
-Met onderstaande commando's kun je kijken of de Integration Server actief is.
-
-ps -ef | grep Integration
-cat /var/mqsi/logs/server.log
 
 Of kijk in de browser naar de web admin
 
-http://localhost:7600/
+https://localhost:7600/
 
 
+---------------
 Test flow maken
-===============
-
-Ok, tijd om een demo flow te maken, start de toolkit op met onderstaand commando:
+---------------
 
 /opt/mqsi/ace toolkit
 
@@ -322,22 +335,33 @@ Maak een test flow die:
  - Het resultaat met een FileOutput node naar de file /tmp/demo.xml schrijft.
 
 Properties:
-    MQInput:    Queue name:     INPUT
-    MQInput:    Message Domain: XMLNSC
-    Compute:    Datasource:     DB
-    FileOutput  Directory       /tmp/
-    FileOutput  File            demo.xml
+    MQInput:     Queue name:     INPUT
+    MQInput:     Message Domain: XMLNSC
+    Compute:     Datasource:     DB
+    FileOutput:  Directory       /tmp/
+    FileOutput:  File            demo.xml
+    FileOutput:  Write directly to the ouput file (append if file exists)
 
 Hieronder de ESQL
 
-SET OutputRoot.XMLNSC.first =
-    THE(SELECT *
-    FROM Database.SCHEMA.TABLE AS A
-    WHERE A.KEY = InputRoot.XMLNSC.test.key);
+CREATE COMPUTE MODULE TEST_Compute
 
-RETURN TRUE;
+    CREATE FUNCTION Main() RETURNS BOOLEAN
 
-Deploy deze flow (drag-and-drop naar server bij Integration Server)
+    BEGIN
+
+        SET OutputRoot.XMLNSC.first =
+            THE(SELECT *
+            FROM Database.SCHEMA.TABLE AS A
+            WHERE A.KEY = InputRoot.XMLNSC.test.key);
+    
+        RETURN TRUE;
+    END;
+
+END MODULE;
+
+
+Make een bar file aan met bovenstaande applicatie en drop die bar file op 'server - localhost:7600'
 
 Zet een test bericht op de INPUT queue van deze demo:
 
