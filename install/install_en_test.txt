@@ -65,6 +65,8 @@ chown -R mqm:mqm /var/mqm
 chown -R db2:db2 /opt/db2
 chown -R mqm:mqm /opt/mqm
 
+usermod -aG db2,mqm,mqbrkrs herbert
+
 
 Note: ACE heeft geen eigen user ( wel een eigen group: mqbrkrs )
 
@@ -72,8 +74,6 @@ Note: ACE heeft geen eigen user ( wel een eigen group: mqbrkrs )
 ---------------
 DB2 installatie
 ---------------
-
-apt-get -y install libaio1t64
 
 rm -rf /tmp/work
 mkdir /tmp/work
@@ -113,8 +113,7 @@ ln -s awssdk/UBUNTU/22.04/libaws-cpp-sdk-transfer.so libaws-cpp-sdk-transfer.so
 
 cd /usr/lib/x86_64-linux-gnu/
 
-ln -s libaio.so libaio.so.1               ( Linux Mint 22 )
-ln -s ln -s libaio.so.1t64 libaio.so.1    ( Ubuntu 2024.04 )
+ln -s libaio.so.1t64.0.2 libaio.so.1    
 
 
 
@@ -137,20 +136,6 @@ cd MQServer
 rm ibmmq-msg-*
 apt install ./*.deb
 
-mkdir -p /var/mqm/mqttUser
-useradd mqttUser -p mqm -g mqm -d /var/mqm/mqttUser
-chown -R mqttUser:mqm /var/mqm/mqttUser
-
-
-
-------
-Eclipse
--------
-
-cd /opt
-tar xzf /home/herbert/Downloads/eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
-chown -R herbert:herbert eclipse
-
 
 
 ---------------
@@ -172,11 +157,15 @@ chown -R herbert:mqbrkrs /var/mqsi
 chown -R herbert:mqbrkrs /opt/mqsi
 
 
-----------------------------
-Add own user to the 3 groups
-----------------------------
 
-usermod -aG db2,mqm,mqbrkrs herbert
+-------
+Eclipse
+-------
+
+cd /opt
+tar xzf /home/herbert/Downloads/eclipse-php-2024-09-R-linux-gtk-x86_64.tar.gz
+chown -R herbert:herbert eclipse
+
 
 
 ----------------------------------
@@ -194,11 +183,12 @@ tar zxf ~herbert/Downloads/ibm_ds4140_lin.tar.gz
 unzip agent.installer.linux.gtk.x86_64_1.9.1006.20210614_1906.zip
 
 ./install
-
 - Als locatie voor "Installation manager" voor "/opt/sdp/manager" gekozen.
 
 File / Preferences / Add Repository 
+- File com.ibm.dsida.im-offering-build-4.1.4-20211124.160709-33-im-offering.zip gekozen
 
+Install
 - Als locatie voor "Shared" voor               "/opt/sdp/shared" gekozen.
 - Als locatie voor "IBM Data Studio" voor      "/opt/sdp/datastudio" gekozen.
 
@@ -219,11 +209,10 @@ LET OP: De commando's vanaf nu met je eigen user uitvoeren en niet met root
 Add MQ explorer to Exlipse
 --------------------------
 
-start eclipse with /opt/eclipse/eclipse
+start eclipse met /opt/eclipse/eclipse
 
-Voeg nieuwe software toe via onderstaande 2 repositories:
+Voeg nieuwe software toe via onderstaande repository
 
-https://dbeaver.io/update/latest/
 https://public.dhe.ibm.com/software/integration/wmq/explorer/v9/updates/
 
 
