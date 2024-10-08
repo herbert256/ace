@@ -4,19 +4,16 @@ killall -s SIGKILL IntegrationServer
 
 db2stop 
 
-endmqm -z -i ADMIN
+endmqm -z -i ESB
+endmqm -z -i INT
+endmqm -z -i EXT
+endmqm -z -i ADM
 endmqm -z -i APP
 
-dltmqm ADMIN
+dltmqm ESB
+dltmqm INT
+dltmqm EXT
+dltmqm ADM
 dltmqm APP
 
 sudo pkill -U mqm --signal SIGKILL
-
-rm -Rf /var/mqm/log/ADMIN*
-rm -Rf /var/mqm/sockets/ADMIN*
-rm -Rf /var/mqm/qmgrs/ADMIN*
-
-rm -Rf /var/mqm/log/APP*
-rm -Rf /var/mqm/sockets/APP*
-rm -Rf /var/mqm/qmgrs/APP*
-

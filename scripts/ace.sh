@@ -17,14 +17,14 @@ do
   b=~/ace/projects/bars/$n.bar
   w=/ace/servers/$n
  
-  mqsicreateworkdir $w
+  mqsicreateworkdir $w > /ace/log/setup/ace/create_$n.txt 2>&1
 
   cp $p $w/overrides/server.conf.yaml
 
-  mqsibar -a $b -c -w $w
+  mqsibar -a $b -c -w $w > /ace/log/setup/ace/deploy_$n.txt 2>&1
 
-  mqsisetdbparms -w $w -n DB -u herbert -p boika
+  mqsisetdbparms -w $w -n DB -u herbert -p boika > /ace/log/setup/ace/dbparms_$n.txt 2>&1
 
-  nohup IntegrationServer --name $n --work-dir $w  < /dev/null > /$w/log/stdout.txt 2>$w/log/stderr.txt &
+  nohup IntegrationServer --name $n --work-dir $w   > /$w/log/stdout.txt 2>$w/log/stderr.txt &
 
 done
