@@ -1,0 +1,17 @@
+BROKER SCHEMA hello.kafka
+
+CREATE COMPUTE MODULE request
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.Service.ReplyToQ = 'HELLO_RESPONSE_KAFKA';
+	
+		SET OutputRoot = InputRoot;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

@@ -1,0 +1,35 @@
+BROKER SCHEMA hello.service
+
+CREATE COMPUTE MODULE PrepareGet
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot 				= InputRoot;
+		SET OutputRoot.MQMD.MsgId	= InputRoot.MQMD.CorrelId;
+						
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Response
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET Environment.Service = Environment.Correlation.XMLNSC.Correlation.Service;		
+		
+		DELETE FIELD Environment.Correlation;
+		
+		SET OutputRoot = InputRoot;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

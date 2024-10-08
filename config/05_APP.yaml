@@ -1,0 +1,27 @@
+serverConfVersion: 1
+
+defaultQueueManager: 'ADM'
+
+Log:
+  consoleLog: false         
+  outputFormat: 'idText'  
+  eventLog: '/ace/servers/05_APP/events/events.txt' 
+
+Statistics:
+  Snapshot:
+    publicationOn: 'inactive'  
+  Archive:
+    archivalOn: 'inactive' 
+  Resource:
+    reportingOn: false
+
+Monitoring:
+  MessageFlow:
+    publicationOn: 'inactive'
+
+RestAdminListener:
+  port: 7605
+
+ResourceManagers:
+  JVM:
+    jvmDebugPort: 7905      

@@ -1,0 +1,17 @@
+BROKER SCHEMA hello.mq
+
+CREATE COMPUTE MODULE MqRequest
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot = InputRoot;
+		
+		SET Environment.Service.ReplyToQ = 'HELLO_RESPONSE_MQ';
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

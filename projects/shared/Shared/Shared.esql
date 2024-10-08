@@ -6,8 +6,7 @@ CREATE FUNCTION FileName () RETURNS CHAR BEGIN
 END;
 
 
-CREATE FUNCTION RootDir () RETURNS CHAR BEGIN RETURN '/ace/data/'; END;
-
+CREATE FUNCTION RootDir    () RETURNS CHAR BEGIN RETURN '/ace/data/';            END;
 CREATE FUNCTION ErrorDir   () RETURNS CHAR BEGIN RETURN RootDir() || 'errors/';  END;
 CREATE FUNCTION StatsDir   () RETURNS CHAR BEGIN RETURN RootDir() || 'stats/';   END;
 CREATE FUNCTION TraceDir   () RETURNS CHAR BEGIN RETURN RootDir() || 'trace/';   END;
@@ -76,28 +75,33 @@ END;
 
 
 CREATE PROCEDURE ClearEmptyFields (IN start REFERENCE) BEGIN 
+		
+	DECLARE J,I INT CARDINALITY (start.*[] );
+		
+	WHILE I > 0 DO
+		
+		DECLARE check INTEGER FIELDTYPE(start.*[I]);
+		 
+		IF check = 0x01000000 THEN
+		
+		  	CALL clearEmptyFields ( start.*[I] );
+			
+			IF CARDINALITY ( start.*[I] ) = 0 THEN
+				SET start.*[I] = NULL;
+			END IF;
+		   
+		ELSEIF check = 0x03000000 OR check = 0x03000100 THEN	
+			
+			DECLARE check2 CHAR CAST (start.*[I] AS CHAR CCSID 1208 ENCODING 546);
 
-	DECLARE field REFERENCE TO start; 
-
-	MOVE field FIRSTCHILD; 
-	
-	WHILE LASTMOVE(field) DO
-		CALL clearEmptyFields (field);
-		MOVE field NEXTSIBLING;
+			IF check2 = '' OR check2 = '0' THEN
+				SET start.*[I] = NULL;
+			END IF;			
+			
+		END IF;
+			
+		SET I = I - 1;
+			
 	END WHILE;
-
-	IF FIELDTYPE(start) = 0x01000000 and CARDINALITY(start.*[]) = 0 THEN
-		SET start = NULL;
-		RETURN;
-	END IF;
- 
-	IF FIELDTYPE(start) = 0x03000000 THEN	
-		IF start = '' THEN
-			SET start = NULL;
-		END IF;
-		IF start = '0' THEN
-			SET start = NULL;
-		END IF;
-	END IF;
-
+		
 END;
