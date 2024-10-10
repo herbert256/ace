@@ -6,7 +6,7 @@
 ~/ace/scripts/ram.sh /var/mqsi
 ~/ace/scripts/ram.sh /var/mqm
 ~/ace/scripts/ram.sh /workspaces
-~/ace/scripts/ram.sh /kafka
+#~/ace/scripts/ram.sh /kafka
 
 mkdir -p /ace/log
 mkdir -p /ace/log/test

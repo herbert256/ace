@@ -1,7 +1,7 @@
 #/bin/sh
 
-nohup ~/ace/test/goed.sh        < /dev/null > /ace/log/test/goed.txt   2>&1 &
-nohup ~/ace/test/fout.sh        < /dev/null > /ace/log/test/fout.txt   2>&1 &
+nohup ~/ace/test/ok.sh          < /dev/null > /ace/log/test/ok.txt   2>&1 &
+nohup ~/ace/test/error.sh       < /dev/null > /ace/log/test/error.txt   2>&1 &
 nohup ~/ace/test/pubsub.sh      < /dev/null > /ace/log/test/pubsub.txt 2>&1 &
 nohup ~/ace/test/tt.sh          < /dev/null > /ace/log/test/tt.txt     2>&1 &
 

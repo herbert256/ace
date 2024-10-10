@@ -86,7 +86,7 @@ CREATE PROCEDURE ClearEmptyFields (IN start REFERENCE) BEGIN
 		
 		  	CALL clearEmptyFields ( start.*[I] );
 			
-			IF CARDINALITY ( start.*[I] ) = 0 THEN
+			IF CARDINALITY ( start.*[I].*[] ) = 0 THEN
 				SET start.*[I] = NULL;
 			END IF;
 		   
@@ -94,7 +94,7 @@ CREATE PROCEDURE ClearEmptyFields (IN start REFERENCE) BEGIN
 			
 			DECLARE check2 CHAR CAST (start.*[I] AS CHAR CCSID 1208 ENCODING 546);
 
-			IF check2 = '' OR check2 = '0' THEN
+			IF check2 = '' OR check2 = '0' OR check2 = '0.00' THEN
 				SET start.*[I] = NULL;
 			END IF;			
 			

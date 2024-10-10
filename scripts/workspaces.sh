@@ -11,16 +11,8 @@ tar zxf ~/ace/archives/workspace.eclipse.tar.gz
 
 mkdir -p /ace/log/eclipse
 
-#nohup MQExplorer                  -data /workspaces/mq       > /ace/log/eclipse/mq.log  2>&1 &
-nohup /opt/mqsi/ace toolkit       -data /workspaces/ace      > /ace/log/eclipse/ace.log 2>&1 &
-nohup /opt/sdp/datastudio/eclipse -data /workspaces/db2      > /ace/log/eclipse/db2.log 2>&1 &
+#nohup MQExplorer                  -data /workspaces/mq       > /ace/log/eclipse/mq.log      2>&1 &
+#nohup /opt/sdp/datastudio/eclipse -data /workspaces/db2      > /ace/log/eclipse/db2.log     2>&1 &
+
+nohup /opt/mqsi/ace toolkit       -data /workspaces/ace      > /ace/log/eclipse/ace.log     2>&1 &
 nohup /opt/eclipse/eclipse        -data /workspaces/eclipse  > /ace/log/eclipse/eclipse.log 2>&1 & 
-
-
-EXT-IN inkomend
-EXT-OUT uitgaand
-
-ESB
-
-INT-IN  inkomend
-INT-OUT	 uitgaand
