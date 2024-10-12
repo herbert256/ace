@@ -7,16 +7,16 @@ CREATE COMPUTE MODULE Queues
 	
 	BEGIN 
  
-		DECLARE Dir  CHAR Shared.RootDir() || 'queues/' || trim(InputRoot.MQMD.ReplyToQMgr) || '/' || trim(InputRoot.MQMD.SourceQueue);
-		DECLARE File CHAR Shared.FileName();
+		DECLARE Dir  CHAR shared.RootDir() || 'queues/' || trim(InputRoot.MQMD.ReplyToQMgr) || '/' || trim(InputRoot.MQMD.SourceQueue);
+		DECLARE File CHAR shared.FileName();
 		
 		SET OutputRoot.Properties.CodedCharSetId = InputRoot.MQMD.CodedCharSetId;
 		SET OutputRoot.Properties.Encoding 		 = InputRoot.MQMD.Encoding;
 			
 		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
 	
-		SET Environment.Shared.Directory = Dir;
-		SET Environment.Shared.File	     = File || '.bin';
+		SET Environment.shared.Directory = Dir;
+		SET Environment.shared.File	     = File || '.bin';
 		
 		PROPAGATE;
 			
@@ -32,8 +32,8 @@ CREATE COMPUTE MODULE Queues
 			SET I = I + 1;
 		END WHILE;
 
-		SET Environment.Shared.Directory = Dir;
-		SET Environment.Shared.File	     = File || '.xml';	
+		SET Environment.shared.Directory = Dir;
+		SET Environment.shared.File	     = File || '.xml';	
 		
 		RETURN TRUE;
 

@@ -1,0 +1,41 @@
+BROKER SCHEMA shared.error
+
+
+CREATE DATABASE MODULE CheckExceptionList
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.shared.ExceptionList = ExceptionList;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE CheckCatch
+
+	DECLARE Check EXTERNAL CHAR 'Catch';
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+ 
+		SET Environment.shared.Directory = shared.ErrorDir() || Check || '/' || MessageFlowLabel;
+		SET Environment.shared.File      = shared.FileName() || '.xml';
+		
+        SET OutputRoot.Properties.CodedCharSetId = 1208;
+        SET OutputRoot.Properties.Encoding 		 = 546;
+
+		SET OutputRoot.XMLNSC.trace.CurrentExceptionList  = InputExceptionList;
+		SET OutputRoot.XMLNSC.trace.PreviousExceptionList = Environment.shared.ExceptionList;
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+

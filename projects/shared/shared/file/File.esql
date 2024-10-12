@@ -1,0 +1,93 @@
+BROKER SCHEMA shared.file
+
+CREATE COMPUTE MODULE File
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		
+		SET Environment.shared.Directory = TRIM(COALESCE(Environment.shared.Directory, ''));
+		SET Environment.shared.File      = TRIM(COALESCE(Environment.shared.File,      ''));
+				
+		IF Environment.shared.Directory = '' THEN
+			SET Environment.shared.Directory = shared.ErrorDir() || 'NoDirectoryGiven/' || MessageFlowLabel || '/' ;			
+		END IF;
+ 		
+		IF Environment.shared.File = '' THEN
+			SET Environment.shared.File = shared.FileName() || '.txt';
+		END IF;
+
+		SET OutputRoot.Properties.CodedCharSetId = InputRoot.Properties.CodedCharSetId;
+		SET OutputRoot.Properties.Encoding 		 = InputRoot.Properties.Encoding;
+			
+		SET OutputRoot.BLOB.BLOB = InputRoot.BLOB.BLOB;
+				
+		SET OutputLocalEnvironment.Destination.File.Directory	= Environment.shared.Directory;
+		SET OutputLocalEnvironment.Destination.File.Name 		= Environment.shared.File;
+		PROPAGATE TO TERMINAL 'out1';
+		
+		SET OutputLocalEnvironment.Destination.File.Directory	= Environment.shared.Directory;
+		SET OutputLocalEnvironment.Destination.File.Name 		= Environment.shared.File;
+		PROPAGATE TO TERMINAL 'out2';
+		
+		RETURN FALSE;
+
+	END;
+
+END MODULE;
+
+CREATE COMPUTE MODULE CopyX
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		RETURN TRUE;
+	END;
+END MODULE;
+
+
+CREATE COMPUTE MODULE Read_Before
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputLocalEnvironment.Destination.File.Directory	= Environment.shared.Directory;
+		SET OutputLocalEnvironment.Destination.File.Name 		= Environment.shared.File;
+
+		SET Environment.ReadFile = '';
+
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Read_After
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+		
+		SET Environment.ReadFile = CAST(InputRoot.BLOB.BLOB AS CHAR CCSID InputRoot.Properties.CodedCharSetId ENCODING InputRoot.Properties.Encoding);
+		
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Read_NoMatch
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+		
+		SET Environment.ReadFile = '';
+		
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;

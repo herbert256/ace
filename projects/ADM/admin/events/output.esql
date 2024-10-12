@@ -1,0 +1,18 @@
+BROKER SCHEMA events
+
+CREATE COMPUTE MODULE output
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	
+	BEGIN
+		
+		SET Environment.shared.Directory = TRIM(COALESCE(Environment.shared.Directory, ''));
+		SET Environment.shared.File      = TRIM(COALESCE(Environment.shared.File,      ''));
+		
+		SET OutputRoot = InputRoot;
+		
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;

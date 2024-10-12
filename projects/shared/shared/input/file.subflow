@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmFileInput.msgnode="ComIbmFileInput.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:shared_input_input.subflow="shared/input/input.subflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="shared/input/file.subflow" nsPrefix="shared_input_file.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.inputDirectory" name="inputDirectory" lowerBound="1" defaultValueLiteral="/data/">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.filenamePattern" name="filenamePattern" lowerBound="1" defaultValueLiteral="*">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageDomainProperty" name="messageDomainProperty" defaultValueLiteral="BLOB">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageSetProperty" name="messageSetProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageTypeProperty" name="messageTypeProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageFormatProperty" name="messageFormatProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="file" bundleName="shared/input/file" pluginId="shared"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/shared/icons/full/obj16/file.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/shared/icons/full/obj30/file.gif"/>
+    <version xmi:type="utility:ConstantString" string="3.0"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="201,25">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="shared/input/file" pluginId="shared"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFileInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="29,26" inputDirectory="/data/ZetMij" recursiveDirectories="true" processedFileAction="moveToArchive" replaceDuplicateArchives="true" messageDomainProperty="BLOB" messageCodedCharSetIdProperty="1208" messageEncodingProperty="546">
+        <translation xmi:type="utility:ConstantString" string="File_Input"/>
+      </nodes>
+      <nodes xmi:type="shared_input_input.subflow:FCMComposite_1" xmi:id="FCMComposite_1_2" location="111,24" ESQL="esql://routine/shared.input#File.Main" ESQL.internal_npcompiler="com.ibm.etools.mft.ibmnodes.compilers.EsqlModulePropertyCompiler" ArchiveType="file">
+        <translation xmi:type="utility:ConstantString" string="Input"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input1"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.catch" targetTerminalName="InTerminal.Input2"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.file.FileInputNodeDirPropertyEditor" configurable="true" describedAttribute="Property.inputDirectory">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.inputDirectory" bundleName="ComIbmFileInput" pluginId="com.ibm.etools.mft.ibmnodes.definitions"/>
+        <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.file.FileInputNodeFilePropertyEditor" configurable="true" describedAttribute="Property.filenamePattern">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.filenamePattern" bundleName="ComIbmFileInput" pluginId="com.ibm.etools.mft.ibmnodes.definitions"/>
+          <propertyDescriptor groupName="Group.Parsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageDomainPropertyEditor" describedAttribute="Property.messageDomainProperty">
+            <propertyName xmi:type="utility:TranslatableString" key="Property.messageDomainProperty" bundleName="Input/File" pluginId="Shared"/>
+            <propertyDescriptor groupName="Group.Parsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageSetNamePropertyEditorV8" describedAttribute="Property.messageSetProperty">
+              <propertyName xmi:type="utility:TranslatableString" key="Property.messageSetProperty" bundleName="Input/File" pluginId="Shared"/>
+              <propertyDescriptor groupName="Group.Parsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageTypePropertyEditorV8" describedAttribute="Property.messageTypeProperty">
+                <propertyName xmi:type="utility:TranslatableString" key="Property.messageTypeProperty" bundleName="Input/File" pluginId="Shared"/>
+                <propertyDescriptor groupName="Group.Parsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageFormatPropertyEditor" describedAttribute="Property.messageFormatProperty">
+                  <propertyName xmi:type="utility:TranslatableString" key="Property.messageFormatProperty" bundleName="Input/File" pluginId="Shared"/>
+                </propertyDescriptor>
+              </propertyDescriptor>
+            </propertyDescriptor>
+          </propertyDescriptor>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.inputDirectory" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmFileInput.msgnode#Property.inputDirectory"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.filenamePattern" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmFileInput.msgnode#Property.filenamePattern"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageDomainProperty" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="shared/input/input.subflow#Property.messageDomain"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageSetProperty" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="shared/input/input.subflow#Property.messageSet"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageTypeProperty" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="shared/input/input.subflow#Property.messageType"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageFormatProperty" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="shared/input/input.subflow#Property.messageFormat"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

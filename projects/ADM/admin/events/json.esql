@@ -1,0 +1,17 @@
+BROKER SCHEMA events
+
+CREATE COMPUTE MODULE JSON
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET OutputRoot = InputRoot;
+		
+		CALL shared.ClearEmptyFields (OutputRoot.JSON);
+		
+		RETURN TRUE;
+
+	END;
+	
+END MODULE;

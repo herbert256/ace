@@ -3,6 +3,7 @@
 	<name>APP</name>
 	<comment></comment>
 	<projects>
+		<project>shared</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

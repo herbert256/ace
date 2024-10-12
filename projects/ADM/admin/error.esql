@@ -8,8 +8,8 @@ CREATE COMPUTE MODULE Error
 
 	BEGIN
 
-		SET Environment.Shared.Directory = Shared.ErrorDir() || Error || '/' || MessageFlowLabel; 
-		SET Environment.Shared.File      = Shared.FileName() || '.xml';
+		SET Environment.shared.Directory = shared.ErrorDir() || Error || '/' || MessageFlowLabel; 
+		SET Environment.shared.File      = shared.FileName() || '.xml';
 		
         SET OutputRoot.Properties.CodedCharSetId = 1208;
         SET OutputRoot.Properties.Encoding 		 = 546;

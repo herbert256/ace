@@ -1,0 +1,57 @@
+BROKER SCHEMA shared.input
+
+
+CREATE DATABASE MODULE Properties
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+		THROW EXCEPTION VALUES('Set de ESQL module voor de Input handling');
+	END;
+
+END MODULE;
+
+
+CREATE DATABASE MODULE File
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.shared.MsgId = shared.MsgId(NULL);
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE DATABASE MODULE MQ
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.shared.MsgId = shared.MsgId(Root.MQMD.MsgId);
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
+
+
+CREATE DATABASE MODULE Timer
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN
+
+		SET Environment.shared.MsgId = shared.MsgId(NULL);
+
+		RETURN TRUE;
+
+	END;
+
+END MODULE;
